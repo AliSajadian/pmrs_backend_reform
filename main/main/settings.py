@@ -26,12 +26,13 @@ SECRET_KEY = 'django-insecure-(*$&6nzyvyz&+r#ns$4b1+onqb4!*8@2+#@zt_thp=0u^3$9^c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 # CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:5173', # The default port for create-react-app
+     'http://localhost:5174',
+     'http://localhost:5173'# The default port for create-react-app
 ]
 
 # RECAPTCHA_PUBLIC_KEY = 'your-public-key'
@@ -92,7 +93,7 @@ ADMIN_ORDERING = [
      ]
      ),
      ('contracts', [
-        # 'Country',
+        'Country',
         'Currency',
         'CompanyType',
         'Company',

@@ -65,7 +65,7 @@ class CountryAdmin(admin.ModelAdmin):
 
 @admin.register(Currency)
 class CurrencyAdmin(admin.ModelAdmin):
-    list_display = ('country', 'currency') 
+    list_display = ('get_country', 'currency') 
     
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -79,6 +79,23 @@ class CurrencyAdmin(admin.ModelAdmin):
     @admin.display(ordering='Currency__Country', description='country')
     def get_country(self, obj):
         return obj.countryid.country
+
+# @admin.register(Currency)
+# class CurrencyAdmin(admin.ModelAdmin):
+#     list_display = ('country', 'currency') 
+    
+#     def get_actions(self, request):
+#         actions = super().get_actions(request)
+#         if 'delete_selected' in actions:
+#             del actions['delete_selected']
+#         return actions  
+    
+#     # def has_add_permission(self, request):
+#     #     return ("add" in request.path or "change" in request.path)
+
+#     @admin.display(ordering='Currency__Country', description='country')
+#     def get_country(self, obj):
+#         return obj.countryid.country
 
 # class PersonelInline(admin.TabularInline):
 #     model = Personel
@@ -133,7 +150,7 @@ class ContractForm(forms.ModelForm):
               'customerid', 'coordinatorid',  
               'startoperationdate', 'finishdate',  'notificationdate', 'validationdate', 'planstartdate', 'startdate', 'duration', 
                'contractamount_r', 'contractamount_fc', 'currencyid', 
-               'prepaymentpercent',  'insurancepercent', 'perforcebondpercent',  'withholdingtaxpercent', 
+               'prepaymentpercent',  'insurancepercent', 'perforcebondpercent',  'withholdingtaxpercent', 'commitpercent',
                'latitude', 'longitude', 
                'iscompleted'
                )
@@ -143,14 +160,12 @@ class ContractForm(forms.ModelForm):
 class ContractAdmin(admin.ModelAdmin):
     form = ContractForm
     list_display = ('contractno', 'contract', 'get_contractType', 'duration')
-    fields = ('contractno', 'contract', 'contracttypeid', 
-              'customerid', 'coordinatorid',  
-              'startoperationdate', 'finishdate',  'notificationdate', 'validationdate', 'planstartdate', 'startdate', 'duration', 
-               'contractamount_r', 'contractamount_fc', 'currencyid', 
-               'prepaymentpercent',  'insurancepercent', 'perforcebondpercent',  'withholdingtaxpercent', 
-               'latitude', 'longitude', 
-               'iscompleted'
-               )
+    fields = ('contractno', 'contract', 'contracttypeid', 'projectmanagerid', 'customerid', 
+              'coordinatorid', 'startoperationdate', 'finishdate', 'notificationdate',  
+              'validationdate', 'planstartdate', 'startdate', 'duration', 'contractamount_r', 
+              'contractamount_fc', 'currencyid', 'prepaymentpercent', 'insurancepercent',  
+              'perforcebondpercent', 'withholdingtaxpercent', 'commitpercent', 'latitude', 'longitude', 'iscompleted'
+             )
     list_filter = ['contracttypeid']
     search_fields = ['contractno']
     ordering = ['contractno']
@@ -167,6 +182,12 @@ class ContractAdmin(admin.ModelAdmin):
     @admin.display(ordering='Contract__ContractType', description='contract type')
     def get_contractType(self, obj):
         return obj.contracttypeid.contracttype
+    
+    # , 'get_projectManager'
+    # @admin.display(ordering='Contract__User', description='project manager')
+    # def get_projectManager(self, obj):
+    #     return '%s %s' % (obj.projectmanagerid.first_name, obj.projectmanagerid.last_name) if obj.projectmanagerid is not None else ''
+    
     
 # @admin.register(ContractUser)
 # class ContractUserAdmin(admin.ModelAdmin):

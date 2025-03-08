@@ -14,9 +14,10 @@ from django.db.models.functions import RowNumber
 from django.db.models.signals import pre_save
 from django.core.files.storage import FileSystemStorage
 from django.dispatch import receiver
+from django.utils import timezone
 
 from django.conf import settings
-from contracts.models import Contract
+from contracts.models import Contract, EpcCorporation
 from contracts.services import GregorianToShamsi, GregorianToShamsiShow
 
 
@@ -306,7 +307,7 @@ class Invoice(models.Model):
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
     dateid = models.ForeignKey(ReportDate,  related_name="ReportDate_Invoice", 
                                    on_delete=models.PROTECT, db_column='DateID')  # Field name made lowercase.
-    senddate = models.DateTimeField(db_column='SendDate', default=datetime.now().date(), blank=True, null=True)  # Field name made lowercase.
+    senddate = models.DateTimeField(db_column='SendDate', default=timezone.now, blank=True, null=True)  # Field name made lowercase.
     aci_g_r = models.BigIntegerField(db_column='ACI_G_R', blank=True, null=True)  # Field name made lowercase.
     aci_g_fc = models.BigIntegerField(db_column='ACI_G_FC', blank=True, null=True)  # Field name made lowercase.
     aca_g_r = models.BigIntegerField(db_column='ACA_G_R', blank=True, null=True)  # Field name made lowercase.
@@ -448,7 +449,7 @@ class FinancialInvoice(models.Model):
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
     dateid = models.ForeignKey(ReportDate,  related_name="ReportDate_InvoiceEx", 
                                    on_delete=models.PROTECT, db_column='DateID')  # Field name made lowercase.
-    senddate = models.DateTimeField(db_column='SendDate', blank=True, null=True)  # Field name made lowercase.
+    senddate = models.DateTimeField(db_column='SendDate', default=timezone.now, blank=True, null=True)  # Field name made lowercase.
     invoicetype = models.CharField(db_column='InvoiceType', max_length=1, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
     alino = models.IntegerField(db_column='ALINo', blank=True, null=True)  # Field name made lowercase.
     almino = models.IntegerField(db_column='ALMINo', blank=True, null=True)  # Field name made lowercase.
@@ -590,6 +591,7 @@ class Machinary(models.Model):
     machine = models.CharField(db_column='Machine', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
     activeno = models.IntegerField(db_column='ActiveNo', default=0)  # Field name made lowercase.
     inactiveno = models.IntegerField(db_column='InactiveNo', default=0)  # Field name made lowercase.
+    priority = models.BooleanField(db_column='Priority', default=False, null=True)
     description = models.CharField(db_column='Description', max_length=100, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
 
     objects = models.Manager()
@@ -751,6 +753,15 @@ class ProjectPersonnel(models.Model):
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
     dateid = models.ForeignKey(ReportDate, related_name="ReportDate_ProjectPersonal", 
                                    on_delete=models.PROTECT, db_column='DateID')  # Field name made lowercase.
+    
+    copmpno = models.IntegerField(db_column='CentralOfficeProjectManagerPersonalNo', default=0)
+    coepno = models.IntegerField(db_column='CentralOfficeEngineeringPersonalNo', default=0)
+    coppno = models.IntegerField(db_column='CentralOfficeProcurementPersonalNo', default=0)
+    cocpno = models.IntegerField(db_column='CentralOfficeConstructionPersonalNo', default=0)
+    wscpno = models.IntegerField(db_column='WorkshopConstructionPersonalNo', default=0)
+    wscaopno = models.IntegerField(db_column='WorkshopContractorAdministrativeOfficePersonalNo', default=0)
+    wsaopno = models.IntegerField(db_column='WorkshopAdministrativeOfficePersonalNo', default=0)
+    
     dpno = models.IntegerField(db_column='DPNo')  # Field name made lowercase.
     dcpno = models.IntegerField(db_column='DCPNo')  # Field name made lowercase.
     mepno = models.IntegerField(db_column='MEPNo')  # Field name made lowercase.
@@ -798,8 +809,11 @@ class ProjectPersonnel(models.Model):
                 elif(month == 12):
                     return 'اسفند'
                         
-    def tpno(self):
-        return (self.dcpno or 0) + (self.mepno or 0)
+    def cotno(self):
+        return (self.copmpno or 0) + (self.coepno or 0) + (self.coppno or 0) + (self.cocpno or 0)
+
+    def wstno(self):
+        return (self.wscpno or 0) + (self.wscaopno or 0) + (self.wsaopno or 0) 
 
     class Meta:
         db_table = 'tblw_ProjectPersonel'
@@ -837,11 +851,24 @@ class TimeprogressState(models.Model):
     objects = models.Manager()
     row_number_objects = TimeProgressStateManager()
     
+    def AsfaltTous_E(self):
+        objects = EpcCorporation.objects.filter(contractid=self.contractid, companyid=7)
+        return True if len(objects) > 0 and objects[0].e_percent > 0 else False
+    
+    def AsfaltTous_P(self):
+        objects = EpcCorporation.objects.filter(contractid=self.contractid, companyid=7)
+        return True if len(objects) > 0 and objects[0].p_percent > 0 else False
+    
+    def AsfaltTous_C(self):
+        objects = EpcCorporation.objects.filter(contractid=self.contractid, companyid=7)
+        return True if len(objects) > 0 and objects[0].c_percent > 0 else False
+    
     def year(self):
-        return self.dateid.year
+        return self.dateid.year 
+        # if self.dateid and self.dateid.year else ''
     
     def month(self):
-        return self.dateid.month
+        return self.dateid.month if self.dateid and self.dateid.month else ''
     
     def eep_shamsiDate(self):
         return GregorianToShamsi(self.eep_date) if self.eep_date is not None else ''           

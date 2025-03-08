@@ -55,7 +55,23 @@ class ContractAPIEx(APIView):
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class ContractTypeAPI(viewsets.ModelViewSet):
+    queryset = ContractType.objects.order_by('contracttypeid')
 
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    serializer_class = ContractTypeSerializer
+
+class CountryAPI(viewsets.ModelViewSet):
+    queryset = Country.objects.all()
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    serializer_class = CountrySerializer
+    
 class CurrencyAPI(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
 
@@ -64,7 +80,6 @@ class CurrencyAPI(viewsets.ModelViewSet):
     ]
 
     serializer_class = CurrencySerializer
-    
     
 class PersonelTypeAPI(viewsets.ModelViewSet):
     queryset = Personeltype.objects.all()

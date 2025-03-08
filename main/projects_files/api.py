@@ -158,7 +158,7 @@ class ProjectDoxAPI(viewsets.ModelViewSet):
             
             SetReportVisit(userId, contractId, dateId, reportId)            
             
-            projectDox = ProjectDox.objects.filter(contractid__exact=contractId)
+            projectDox = ProjectDox.objects.filter(contractid__exact=contractId, dateid__lte=dateId)
             serializer = ProjectDoxSerializers(instance=projectDox, many=True)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -237,7 +237,7 @@ class ProjectMonthlyDoxAPI(viewsets.ModelViewSet):
             
             SetReportVisit(userId, contractId, dateId, reportId)            
             
-            projectMonthlyDox = ProjectMonthlyDox.objects.filter(contractid__exact=contractId)
+            projectMonthlyDox = ProjectMonthlyDox.objects.filter(contractid__exact=contractId, dateid__lte=dateId)
             serializer = ProjectMonthlyDoxSerializers(instance=projectMonthlyDox, many=True)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -274,7 +274,7 @@ class ApprovedInvoiceDoxAPI(viewsets.ModelViewSet):
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
-            approvedInvoiceDox = InvoiceDox.objects.filter(contractid__exact=contractId, dateid__exact=dateId)
+            approvedInvoiceDox = InvoiceDox.objects.filter(contractid__exact=contractId, dateid__lte=dateId)
             serializer = ApprovedInvoiceDoxSerializers(instance=approvedInvoiceDox, many=True)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -585,12 +585,30 @@ def getReportProjectZoneImages(request, zoneid):
     except Exception as e:
         return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['get'])
+@api_view(['post'])
 @permission_classes([permissions.IsAuthenticated])
-def getReportProjectAllZonesImages(request, contractid):
-    try:
-        contractId = contractid
-        zoneImages = ZoneImage.projectZoneImages.projectAllZonesImages(contractId)
+def getReportSelectedProjectAllZonesImages(request, *args, **kwargs):
+    try: 
+        data = request.data
+        contractsId = [int(contractId) for contractId in data]
+        dateId = int(kwargs["dateid"])
+        
+        zoneImages = ZoneImage.projectZoneImages.selectedProjectAllZonesImages(contractsId, dateId)
+        serializer = ProjectZoneImagesSerializers(instance=zoneImages, many=True)
+        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['post'])
+@permission_classes([permissions.IsAuthenticated])
+def getReportSelectedProjectAllZonesImagesEx(request, *args, **kwargs):
+    try: 
+        data = request.data
+        contractsId = [int(contractId) for contractId in data]
+        fromDateId = int(kwargs["fromDateid"])
+        toDateId = int(kwargs["toDateid"])
+        
+        zoneImages = ZoneImage.projectZoneImages.selectedProjectAllZonesImagesEx(contractsId, fromDateId, toDateId)
         serializer = ProjectZoneImagesSerializers(instance=zoneImages, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
     except Exception as e:
@@ -598,14 +616,28 @@ def getReportProjectAllZonesImages(request, contractid):
 
 @api_view(['get'])
 @permission_classes([permissions.IsAuthenticated])
-def getReportAllProjectZonesImages(request):
+def getReportAllProjectZonesImages(request, *args, **kwargs):
     try:
-        zoneImages = ZoneImage.projectZoneImages.allProjectZonesImages()
+        dateId = int(kwargs["dateid"])
+
+        zoneImages = ZoneImage.projectZoneImages.allProjectZonesImages(dateId)
         serializer = ProjectZoneImagesSerializers(instance=zoneImages, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['get'])
+@permission_classes([permissions.IsAuthenticated])
+def getReportAllProjectZonesImagesEx(request, *args, **kwargs):
+    try:
+        fromDateId = int(kwargs["fromDateid"])
+        toDateId = int(kwargs["toDateid"])
+        
+        zoneImages = ZoneImage.projectZoneImages.allProjectZonesImagesEx(fromDateId, toDateId)
+        serializer = ProjectZoneImagesSerializers(instance=zoneImages, many=True)
+        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ReportVisitAPI(APIView):
     permission_classes = [

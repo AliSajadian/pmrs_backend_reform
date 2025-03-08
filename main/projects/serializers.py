@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from contracts.models import EpcCorporation
 from projects.models import *
 
 
@@ -143,8 +144,7 @@ class ProgressStateReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgressState
         fields = ("pp_e", "ap_e", "pp_p", "ap_p", "pp_c", "ap_c", "pp_t", "ap_t", "pr_t", "pfc_t", "persian6Month")
-                 
-         
+                        
 class TimeProgressStateSerializer(serializers.ModelSerializer):
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
@@ -156,13 +156,18 @@ class TimeProgressStateSerializer(serializers.ModelSerializer):
     ece_shamsiDate = serializers.ReadOnlyField()
     epjp_shamsiDate = serializers.ReadOnlyField()
     epje_shamsiDate = serializers.ReadOnlyField()
-
+    
+    AsfaltTous_E = serializers.ReadOnlyField()
+    AsfaltTous_P = serializers.ReadOnlyField()
+    AsfaltTous_C = serializers.ReadOnlyField()
+    
     class Meta:
         model = TimeprogressState
         fields = ("timeprogressstateid", "contractid", "dateid", "plan_replan", "eep_date", "eee_date", 
                     "epp_date", "epe_date", "ecp_date", "ece_date", "epjp_date", "epje_date", "year", "month",
                     "eep_shamsiDate", "eee_shamsiDate", "epp_shamsiDate", "epe_shamsiDate", "ecp_shamsiDate", 
-                    "ece_shamsiDate", "epjp_shamsiDate", "epje_shamsiDate")
+                    "ece_shamsiDate", "epjp_shamsiDate", "epje_shamsiDate", "AsfaltTous_E", "AsfaltTous_P", 
+                    "AsfaltTous_C")
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
@@ -266,19 +271,20 @@ class MachinerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Machinary
         fields = ("machinaryid", "contractid", "dateid", "machine", "activeno", 
-                  "inactiveno", "description")
+                  "inactiveno", "priority", "description")
 
 
 class ProjectPersonalSerializer(serializers.ModelSerializer):
-    tpno = serializers.ReadOnlyField()
+    # cotno = serializers.ReadOnlyField()
+    # wstno = serializers.ReadOnlyField()
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
 
     # row_number = serializers.ReadOnlyField() , "row_number"
     class Meta:
         model = ProjectPersonnel
-        fields = ("projectpersonelid", "contractid", "dateid", "dpno", "dcpno", "mepno", 
-                  "tpno", "description", "year", "month")
+        fields = ("projectpersonelid", "contractid", "dateid", "copmpno", "coepno", "coppno", 
+                  "cocpno", "wscpno", "wscaopno", "wsaopno", "dpno", "mepno", "description", "year", "month")
 
 class ProjectPersonalReportSerializer(serializers.ModelSerializer):
     persianMonth = serializers.ReadOnlyField()

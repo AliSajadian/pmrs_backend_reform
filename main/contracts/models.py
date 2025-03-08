@@ -92,7 +92,7 @@ class Country(models.Model):
     countryid = models.AutoField(db_column='CountryID', primary_key=True)  
     country = models.CharField(db_column='Country', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.country
     
     class Meta:
@@ -103,8 +103,7 @@ class Country(models.Model):
 
 class Currency(models.Model):
     currencyid = models.AutoField(db_column='CurrencyID', primary_key=True)  
-    # countryid = models.ForeignKey(Country, models.DO_NOTHING, db_column='CountryID')  
-    country =  models.CharField(db_column='Country', max_length=50, null=True, db_collation='SQL_Latin1_General_CP1_CI_AS')  
+    countryid = models.ForeignKey(Country, models.DO_NOTHING, db_column='CountryID')  
     currency = models.CharField(db_column='Currency', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
     def __str__(self) -> str:
@@ -112,33 +111,33 @@ class Currency(models.Model):
     
     class Meta:
         db_table = 'tbl_Currency'
-        # unique_together = (('country', 'currency'),)
         verbose_name = 'Currency'
         verbose_name_plural = 'Currencies'
 
 
 class Contract(models.Model):
-    contractid = models.AutoField(db_column='ContractID', primary_key=True)  
-    contractno = models.CharField(db_column='ContractNo', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
-    contracttypeid = models.ForeignKey(ContractType, related_name="ContractType_Contract", on_delete=models.CASCADE, db_column='ContractTypeID')  
+    contractid = models.AutoField(db_column='ContractID', primary_key=True, verbose_name='ContractID')  
+    contractno = models.CharField(db_column='ContractNo', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', verbose_name='Contract No')  
+    contracttypeid = models.ForeignKey(ContractType, related_name="ContractType_Contract", on_delete=models.CASCADE, db_column='ContractTypeID', verbose_name='Contract Type')  
     projectmanagerid = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ProjectManager_Contract", on_delete=models.CASCADE, db_column='ProjectManagerID')  
-    customerid = models.ForeignKey(Company, related_name="Customer_Contract", on_delete=models.CASCADE, db_column='CustomerID')  
-    coordinatorid = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="Coordinator_Contract", on_delete=models.CASCADE, db_column='CoordinatorID', blank=True, null=True)  
-    currencyid = models.ForeignKey(Currency, related_name="Currency_Contract", on_delete=models.CASCADE, db_column='CurrencyID', blank=True, null=True)  
-    contract = models.CharField(db_column='Contract', max_length=250, db_collation='SQL_Latin1_General_CP1_CI_AS')  
-    startoperationdate = models.DateField(db_column='StartOperationDate', blank=True, null=True)  
-    finishdate = models.DateField(db_column='FinishDate', blank=True, null=True)  
-    notificationdate = models.DateField(db_column='NotificationDate', blank=True, null=True)  
-    validationdate = models.DateField(db_column='ValidationDate', blank=True, null=True)  
-    planstartdate = models.DateField(db_column='PlanStartDate', blank=True, null=True)  
-    startdate = models.DateField(db_column='StartDate', blank=True, null=True)  
-    duration = models.IntegerField(db_column='Duration', blank=True, null=True)  
-    prepaymentpercent = models.FloatField(db_column='PrePaymentPercent', blank=True, null=True)  
-    insurancepercent = models.FloatField(db_column='InsurancePercent', blank=True, null=True)  
-    perforcebondpercent = models.FloatField(db_column='PerforceBondPercent', blank=True, null=True)  
-    withholdingtaxpercent = models.FloatField(db_column='WithholdingTaxPercent', blank=True, null=True)  
-    contractamount_r = models.BigIntegerField(db_column='ContractAmount_R', blank=True, null=True)  
-    contractamount_fc = models.BigIntegerField(db_column='ContractAmount_FC', blank=True, null=True)  
+    customerid = models.ForeignKey(Company, related_name="Customer_Contract", on_delete=models.CASCADE, db_column='CustomerID', verbose_name='Customer')  
+    coordinatorid = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="Coordinator_Contract", on_delete=models.CASCADE, db_column='CoordinatorID', blank=True, null=True, verbose_name='Coordinator')  
+    currencyid = models.ForeignKey(Currency, related_name="Currency_Contract", on_delete=models.CASCADE, db_column='CurrencyID', blank=True, null=True, verbose_name='Currency')  
+    contract = models.CharField(db_column='Contract', max_length=250, db_collation='SQL_Latin1_General_CP1_CI_AS', verbose_name='Contract')  
+    startoperationdate = models.DateField(db_column='StartOperationDate', blank=True, null=True, verbose_name='Actual Start Date')  
+    finishdate = models.DateField(db_column='FinishDate', blank=True, null=True, verbose_name='Finish Date')  
+    notificationdate = models.DateField(db_column='NotificationDate', blank=True, null=True, verbose_name='Notification Date')  
+    validationdate = models.DateField(db_column='ValidationDate', blank=True, null=True, verbose_name='Confirmation Date')  
+    planstartdate = models.DateField(db_column='PlanStartDate', blank=True, null=True, verbose_name='Plan Start Date')  
+    startdate = models.DateField(db_column='StartDate', blank=True, null=True, verbose_name='Start Date')  
+    duration = models.IntegerField(db_column='Duration', blank=True, null=True, verbose_name='Duration')  
+    prepaymentpercent = models.FloatField(db_column='PrePaymentPercent', blank=True, null=True, verbose_name='Prepayment Percent')  
+    insurancepercent = models.FloatField(db_column='InsurancePercent', blank=True, null=True, verbose_name='Insurance Percent')  
+    perforcebondpercent = models.FloatField(db_column='PerforceBondPercent', blank=True, null=True, verbose_name='Performance Bond Percent')  
+    withholdingtaxpercent = models.FloatField(db_column='WithholdingTaxPercent', blank=True, null=True, verbose_name='Tax Percent')  
+    commitpercent = models.FloatField(db_column='CommitPercent', blank=True, null=True, verbose_name='Commit Percent')  
+    contractamount_r = models.BigIntegerField(db_column='ContractAmount_R', blank=True, null=True, verbose_name='Contract Amount R')  
+    contractamount_fc = models.BigIntegerField(db_column='ContractAmount_FC', blank=True, null=True, verbose_name='Contract Amount FC')  
     schedulelevel = models.SmallIntegerField(db_column='ScheduleLevel')  
     version = models.IntegerField(db_column='Version')  
     currencybprice = models.IntegerField(db_column='CurrencyBPrice', blank=True, null=True)  
@@ -153,11 +152,11 @@ class Contract(models.Model):
     attachmentcontractprice4_fc = models.BigIntegerField(db_column='AttachmentContractPrice4_FC', blank=True, null=True)  
     attachmentcontractprice5_r = models.BigIntegerField(db_column='AttachmentContractPrice5_R', blank=True, null=True)  
     attachmentcontractprice5_fc = models.BigIntegerField(db_column='AttachmentContractPrice5_FC', blank=True, null=True) 
-    location = models.CharField(db_column='Location', max_length=20, null=True)
-    latitude =  models.FloatField(db_column='Latitude', null=True)
-    longitude =  models.FloatField(db_column='Longitude', null=True)
-    iscompleted = models.BooleanField(db_column='IsCompleted', blank=True, null=True)  
-    completeddate = models.IntegerField(db_column='CompletedDate', blank=True, null=True)  
+    location = models.CharField(db_column='Location', max_length=20, null=True, verbose_name='Location')
+    latitude =  models.FloatField(db_column='Latitude', null=True, verbose_name='Latitude')
+    longitude =  models.FloatField(db_column='Longitude', null=True, verbose_name='Longitude')
+    iscompleted = models.BooleanField(db_column='IsCompleted', blank=True, null=True, verbose_name='Is Completed')  
+    completeddate = models.IntegerField(db_column='CompletedDate', blank=True, null=True, verbose_name='Completed Date')  
  
     def contractamount_r_(self):
         return f"{self.contractamount_r:,}"
@@ -299,7 +298,7 @@ class EpcCorporation(models.Model):
     
     def __str__(self) -> str:
         return '%s: e=%s, p=%s, c=%s' % (self.companyid.company, self.e_percent, self.p_percent, self.c_percent)
-
+   
     def E(self):
         e = EpcCorporation.objects.filter(contractid__exact=self.contractid, e_percent__gt=0).values(
             'companyid__company', 'e_percent').annotate( value = F('e_percent'), 

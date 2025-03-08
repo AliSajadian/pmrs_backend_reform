@@ -6,6 +6,7 @@ from .api import *
 router = routers.DefaultRouter()
 router.register('api/contractTypes', ContractTypeAPI, 'contractTypes')
 router.register('api/currencies', CurrencyAPI, 'currencies')
+router.register('api/countries', CountryAPI, 'countries')
 router.register('api/contractAddendums', ContractAddendumAPI, 'contractAddendums')
 router.register('api/personalTypes', PersonelTypeAPI, 'personalTypes')
 router.register('api/personals', PersonelAPI, 'personals')

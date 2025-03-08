@@ -23,6 +23,11 @@ class ContractSerializerEx(serializers.ModelSerializer):
         model = Contract
         fields = ['contractid', 'contracttypeid', 'contracttype', 'contract', 'currency']
         
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = '__all__'
+        
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency

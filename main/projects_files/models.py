@@ -403,8 +403,8 @@ class Zone(models.Model):
 # ========================================= 
 zoneImage_fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs_Files\Constructions Pix")
 class ProjectZoneImageQuerySet(models.query.QuerySet):
-    def allProjectZonesImages(self):
-        zoneImages1 = self.all().values(
+    def allProjectZonesImages(self, dateId):
+        zoneImages1 = self.filter(dateid__lte=dateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
             contract=F('zoneid__contractid__contract'), 
             zone=F('zoneid__zone'), 
@@ -414,7 +414,7 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
             #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
             #                   Value(' } - '), 'description1', output_field=CharField()) 
             ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
-        zoneImages2 = self.all().values(
+        zoneImages2 = self.filter(dateid__lte=dateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img2', 'description2').annotate(
             contract=F('zoneid__contractid__contract'), 
             zone=F('zoneid__zone'), 
@@ -424,7 +424,7 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
             #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
             #                   Value(' } - '), 'description2', output_field=CharField())
             ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
-        zoneImages3 = self.all().values(
+        zoneImages3 = self.filter(dateid__lte=dateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img3', 'description3').annotate(
             contract=F('zoneid__contractid__contract'), 
             zone=F('zoneid__zone'), 
@@ -436,7 +436,41 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
             ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
 
         return zoneImages1.union(zoneImages2).union(zoneImages3)   
-    
+
+    def allProjectZonesImagesEx(self, fromDateId, toDateId):
+        zoneImages1 = self.filter(dateid__gte=fromDateId, dateid__lte=toDateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img1'), 
+            description=F('description1')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description1', output_field=CharField()) 
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+        zoneImages2 = self.filter(dateid__gte=fromDateId, dateid__lte=toDateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img2', 'description2').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img2'), 
+            description=F('description2')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description2', output_field=CharField())
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+        zoneImages3 = self.filter(dateid__gte=fromDateId, dateid__lte=toDateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img3', 'description3').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img3'), 
+            description=F('description3')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description3', output_field=CharField())
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+
+        return zoneImages1.union(zoneImages2).union(zoneImages3)   
+       
     def projectAllZonesImages(self, contractId):
         zoneImages1 = self.filter(zoneid__contractid__exact=contractId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
@@ -459,6 +493,74 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
             #                   Value(' } - '), 'description2', output_field=CharField())
             ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
         zoneImages3 = self.filter(zoneid__contractid__exact=contractId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img3', 'description3').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img3'), 
+            description=F('description3')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description3', output_field=CharField())
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+
+        return zoneImages1.union(zoneImages2).union(zoneImages3)   
+    
+    def selectedProjectAllZonesImages(self, contractsId, dateId):
+        zoneImages1 = self.filter(zoneid__contractid__in=contractsId, dateid__lte=dateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img1'), 
+            description=F('description1')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description1', output_field=CharField()) 
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+        zoneImages2 = self.filter(zoneid__contractid__in=contractsId, dateid__lte=dateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img2', 'description2').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img2'), 
+            description=F('description2')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description2', output_field=CharField())
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+        zoneImages3 = self.filter(zoneid__contractid__in=contractsId, dateid__lte=dateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img3', 'description3').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img3'), 
+            description=F('description3')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description3', output_field=CharField())
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+
+        return zoneImages1.union(zoneImages2).union(zoneImages3)   
+    
+    def selectedProjectAllZonesImagesEx(self, contractsId, fromDateId, toDateId):
+        zoneImages1 = self.filter(zoneid__contractid__in=contractsId, dateid__gte=fromDateId, dateid__lte=toDateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img1'), 
+            description=F('description1')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description1', output_field=CharField()) 
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+        zoneImages2 = self.filter(zoneid__contractid__in=contractsId, dateid__gte=fromDateId, dateid__lte=toDateId).values(
+            'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img2', 'description2').annotate(
+            contract=F('zoneid__contractid__contract'), 
+            zone=F('zoneid__zone'), 
+            img=F('img2'), 
+            description=F('description2')
+            # description=Concat(Value(' { پروژه: '), 'zoneid__contractid__contract',  
+            #                   Value(' } - { درصد پیشرفت برنامه ای: '), 'ppp', Value( ' } - { درصد پیشرفت واقعی: '), 'app', 
+            #                   Value(' } - '), 'description2', output_field=CharField())
+            ).values('contract', 'zone', 'ppp', 'app', 'img', 'description')
+        zoneImages3 = self.filter(zoneid__contractid__in=contractsId, dateid__gte=fromDateId, dateid__lte=toDateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img3', 'description3').annotate(
             contract=F('zoneid__contractid__contract'), 
             zone=F('zoneid__zone'), 
@@ -509,11 +611,20 @@ class ProjectZoneImageManager(models.Manager):
     def get_queryset(self):
         return ProjectZoneImageQuerySet(self.model, using=self._db)
 
-    def allProjectZonesImages(self):
-        return self.get_queryset().allProjectZonesImages()
+    def allProjectZonesImages(self, dateId):
+        return self.get_queryset().allProjectZonesImages(dateId)
+
+    def allProjectZonesImagesEx(self, fromDateId, toDateId):
+        return self.get_queryset().allProjectZonesImagesEx(fromDateId, toDateId)
 
     def projectAllZonesImages(self, contractId):
         return self.get_queryset().projectAllZonesImages(contractId)
+
+    def selectedProjectAllZonesImages(self, contractsId, dateId):
+        return self.get_queryset().selectedProjectAllZonesImages(contractsId, dateId)
+
+    def selectedProjectAllZonesImagesEx(self, contractsId, fromDateId, toDateId):
+        return self.get_queryset().selectedProjectAllZonesImagesEx(contractsId, fromDateId, toDateId)
 
     def projectZoneImages(self, zoneId):
         return self.get_queryset().projectZoneImages(zoneId)        

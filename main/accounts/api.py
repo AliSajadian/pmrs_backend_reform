@@ -276,7 +276,7 @@ class PasswordAPIView(APIView):
         serializer = PasswordSerializer(data=request.data)
         if serializer.is_valid():
             userid = serializer.data['userid']
-            # username = serializer.data['username']
+            username = serializer.data['username']
             user = self.get_object(userid)
             oldpassword = serializer.data['currentpassword']
             is_same_as_old = user.check_password(oldpassword)

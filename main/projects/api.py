@@ -25,10 +25,11 @@ class ReportDateAPIEx(APIView):
         READ Report Date:
         
         every time read Report date model if encounter to begin of new persian month it 
-        create new record for new month in ReportDate model this way always the ReportDate 
-        contain all new persian months
+        create new record for last month in ReportDate model this way always the ReportDate 
+        contain all persian months until last month
         
-        if user read ReportDate model after a few months then system create a record for each of those months
+        if user read ReportDate model after a few months then system create a record for 
+        each of those months to reach to last month
     '''
     def get(self, request):
         max_date_id = ReportDate.objects.aggregate(Max('dateid'))['dateid__max']
@@ -39,6 +40,11 @@ class ReportDateAPIEx(APIView):
         now = GregorianToShamsi(datetime.now())
         y2 = int(now[0:4])
         m2 = int(now[5:now.find('-', 5)])
+        if(m2 > 1):
+            m2 = m2 - 1
+        else:
+            m2 = 12
+            y2 = y2 - 1
         
         loop = 0
         if((y2 - y1) > 1 or ((y2 - y1) == 0 and (m2 - m1) > 0) or ((y2 -y1) == 1 and (12 - m1 + m2 > 0))):
@@ -483,10 +489,13 @@ class TimeProgressStateAPI(viewsets.ModelViewSet):
             if flg == 0:
                 contract = Contract.objects.get(pk=contractId)
                 date = ReportDate.objects.get(pk=dateId)
+                # TimeprogressState.objects.update_or_create(contractid=contract ,dateid=date, 
+                #                                            defaults={'plan_replan':'00', 'eep_date':datetime.now(), 'eee_date':datetime.now(), 
+                #                                            'epp_date':datetime.now(), 'epe_date':datetime.now(), 'ecp_date':datetime.now(), 
+                #                                            'ece_date':datetime.now(), 'epjp_date':datetime.now(), 'epje_date':datetime.now()})
+
                 TimeprogressState.objects.update_or_create(contractid=contract ,dateid=date, 
-                                                           defaults={'plan_replan':'00', 'eep_date':None, 'eee_date':None, 
-                                                           'epp_date':None, 'epe_date':None, 'ecp_date':None, 
-                                                           'ece_date':None, 'epjp_date':None, 'epje_date':None})
+                                                           defaults={'plan_replan':'00'})
             
             timeProgressStates = TimeprogressState.objects.filter(contractid__exact=contractId, dateid__lte=dateId).order_by('dateid')
             serializer = TimeProgressStateSerializer(instance=timeProgressStates, many=True)
@@ -621,7 +630,7 @@ class FinancialInvoiceAPI(viewsets.ModelViewSet):
                 #                              'ccpi_a_fc':None, 'ccpi_a_vat_r':None, 'ccpi_a_vat_fc':None, 'ccpi_a_vat_ew_r':None, 
                 #                              'ccpi_a_vat_ew_fc':None, 'cp_pp_r':None, 'cp_pp_fc':None, 'pp_pp_r':None, 
                 #                              'pp_pp_fc':None, 'r':None, 'm':None, 'typevalue':None})
-                FinancialInvoice.objects.update_or_create(contractid=contract ,dateid=date, r=True, defaults={ 'senddate': datetime.now(), 'invoicetype':'', 'alino':None, 'almino':None, 
+                FinancialInvoice.objects.update_or_create(contractid=contract ,dateid=date, r=True, defaults={ 'senddate': datetime.now(), 'invoicetype':'T', 'alino':None, 'almino':None, 
                                         'aci_g_r':0, 'aci_n_r':financialInfos[0].lastverifiedinvoice_r if financialInfos and len(financialInfos) > 0 else 0, 
                                         'aci_g_fc':None, 'aci_n_fc':None,
                                         'aca_g_r':0, 'aca_n_r':financialInfos[0].lastverifiedadjustmentinvoice_r if financialInfos and len(financialInfos) > 0 else 0,
@@ -638,7 +647,7 @@ class FinancialInvoiceAPI(viewsets.ModelViewSet):
                                         'ccpi_a_vat_r':0, 'ccpi_a_vat_fc':None, 'ccpi_a_vat_ew_r':0, 'ccpi_a_vat_ew_fc':None, 
                                         'cp_pp_r':0, 'cp_pp_fc':None, 'pp_pp_r':0, 'pp_pp_fc':None, 'm':True, 'typevalue':None})
 
-                FinancialInvoice.objects.update_or_create(contractid=contract ,dateid=date, r=False, defaults={ 'senddate': datetime.now(), 'invoicetype':'', 'alino':None, 'almino':None, 
+                FinancialInvoice.objects.update_or_create(contractid=contract ,dateid=date, r=False, defaults={ 'senddate': datetime.now(), 'invoicetype':'T', 'alino':None, 'almino':None, 
                                         'aci_g_fc':0, 'aci_n_fc':financialInfos[0].lastverifiedinvoice_fc if financialInfos and len(financialInfos) > 0 else 0, 
                                         'aci_g_r':None, 'aci_n_r':None,
                                         'aca_g_fc':0, 'aca_n_fc':financialInfos[0].lastverifiedadjustmentinvoice_fc if financialInfos and len(financialInfos) > 0 else 0,
@@ -897,7 +906,8 @@ class MachineryAPI(viewsets.ModelViewSet):
             last_date_id = ReportDate.objects.filter(dateid__lt=dateId).aggregate(Max('dateid'))['dateid__max']
 
             flg = 1	if Machinary.objects.filter(contractid__exact=contractId, dateid__exact=last_date_id).count() > 0 else 0
-                
+            total_field_exist = False
+            
             if record_count == 0:
                 if flg == 0:
                     Machinary.objects.bulk_create([
@@ -922,15 +932,42 @@ class MachineryAPI(viewsets.ModelViewSet):
                         Machinary(contractid=contract, dateid=date, machine="دستگاه جدول زنی"),
                         Machinary(contractid=contract, dateid=date, machine="تانکر سوخت آب"),
                         Machinary(contractid=contract, dateid=date, machine="چکش مکانیکی"),
+                        Machinary(contractid=contract, dateid=date, machine="جمع کل", priority=1),
                     ])
                 else: 
                     machineries = Machinary.objects.filter(contractid__exact=contractId, dateid__exact=last_date_id)
                     for machinery in machineries:
+                        if(machinery.machine == "جمع کل"):
+                            total_field_exist = True                            
                         Machinary.objects.create(contractid=contract, dateid=date, 
-                                                     machine=machinery.machine, activeno=machinery.activeno or 0, 
-                                                     inactiveno=machinery.inactiveno or 0, description=machinery.description or '')
+                                    machine=machinery.machine, activeno=machinery.activeno or 0, 
+                                    inactiveno=machinery.inactiveno or 0, priority=1 if(machinery.machine == "جمع کل") else 0, 
+                                    description=machinery.description or '')
+                    
+                    if(not total_field_exist):
+                        total_field_exist = True    
+                        Machinary.objects.create(contractid=contract, dateid=date, 
+                                    machine="جمع کل", activeno=machinery.activeno or 0, 
+                                    inactiveno=machinery.inactiveno or 0, priority=1,
+                                    description=machinery.description or '')
             
             machineries = Machinary.objects.filter(contractid__exact=contractId, dateid__exact=dateId)
+           
+            if(not total_field_exist):
+                activeno = machineries.exclude(machine__exact="جمع کل").aggregate(Sum('activeno'))['activeno__sum']
+                inactiveno = machineries.exclude(machine__exact="جمع کل").aggregate(Sum('inactiveno'))['inactiveno__sum']
+                total_exist = True if machineries.filter(machine__exact="جمع کل").count() > 0 else False 
+                if(not total_exist):
+                    Machinary.objects.create(contractid=contract, dateid=date, 
+                                            machine="جمع کل", activeno=activeno or 0, 
+                                            inactiveno=inactiveno or 0, priority=1, description=machinery.description or '')
+                else:
+                    total = Machinary.objects.filter(contractid__exact=contractId, dateid__exact=dateId, machine__exact="جمع کل")[0]
+                    total.activeno = activeno
+                    total.inactiveno = inactiveno
+                    total.save()
+                    
+            machineries = Machinary.objects.filter(contractid__exact=contractId, dateid__exact=dateId).order_by("priority", "machinaryid")     
             serializer = MachinerySerializer(instance=machineries, many=True)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:

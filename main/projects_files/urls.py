@@ -24,8 +24,10 @@ urlpatterns = [
     path('api/updateZoneImage/<int:pk>/', updateZoneImage),    
     path('api/zoneImages/<int:contractid>/<int:dateid>/', ZoneImagesAPI.as_view()),    
 
-    path('api/allContractZonesImages/', getReportAllProjectZonesImages), 
-    path('api/contractAllZonesImages/<int:contractid>/', getReportProjectAllZonesImages), 
+    path('api/allContractsZonesImages/<int:dateid>/', getReportAllProjectZonesImages), 
+    path('api/allContractsZonesImagesEx/<int:fromDateid>/<int:toDateid>/', getReportAllProjectZonesImagesEx), 
+    path('api/selectedContractsAllZonesImages/<int:dateid>/', getReportSelectedProjectAllZonesImages), 
+    path('api/selectedContractsAllZonesImagesEx/<int:fromDateid>/<int:toDateid>/', getReportSelectedProjectAllZonesImagesEx), 
     path('api/contractZoneImages/<int:zoneid>/', getReportProjectZoneImages), 
 
     path('api/hseReportDox/contractList/<int:contractid>/', HseReportDoxAPI.as_view({"get": "contractList"})),    

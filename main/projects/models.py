@@ -810,10 +810,10 @@ class ProjectPersonnel(models.Model):
                     return 'اسفند'
                         
     def cotno(self):
-        return (self.copmpno or 0) + (self.coepno or 0) + (self.coppno or 0) + (self.cocpno or 0)
+        return ((self.copmpno or 0) + (self.coepno or 0) + (self.coppno or 0) + (self.cocpno or 0)) if self.dateid.dateid > 1126 else (self.dpno or 0) 
 
     def wstno(self):
-        return (self.wscpno or 0) + (self.wscaopno or 0) + (self.wsaopno or 0) 
+        return ((self.wscpno or 0) + (self.wscaopno or 0) + (self.wsaopno or 0)) if self.dateid.dateid > 1126 else (self.mepno or 0) 
 
     class Meta:
         db_table = 'tblw_ProjectPersonel'

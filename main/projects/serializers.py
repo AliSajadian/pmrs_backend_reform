@@ -275,8 +275,8 @@ class MachinerySerializer(serializers.ModelSerializer):
 
 
 class ProjectPersonalSerializer(serializers.ModelSerializer):
-    # cotno = serializers.ReadOnlyField()
-    # wstno = serializers.ReadOnlyField()
+    cotno = serializers.ReadOnlyField()
+    wstno = serializers.ReadOnlyField()
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
 
@@ -284,7 +284,7 @@ class ProjectPersonalSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectPersonnel
         fields = ("projectpersonelid", "contractid", "dateid", "copmpno", "coepno", "coppno", 
-                  "cocpno", "wscpno", "wscaopno", "wsaopno", "dpno", "mepno", "description", "year", "month")
+                  "cocpno", "wscpno", "wscaopno", "wsaopno", "cotno", "wstno", "description", "year", "month")
 
 class ProjectPersonalReportSerializer(serializers.ModelSerializer):
     persianMonth = serializers.ReadOnlyField()

@@ -1,5 +1,8 @@
+"""
+URLs for the projects_files application.
+"""
 from rest_framework import routers
-from django.urls import path, include
+from django.urls import path
 
 from .api import *
        
@@ -8,7 +11,7 @@ router.register('api/hseReportDox', HseReportDoxAPI, basename='hseReportDox')
 router.register('api/projectDox', ProjectDoxAPI, basename='projectDox')
 router.register('api/contractorDox', ContractorDoxAPI, basename='contractorDox')
 router.register('api/projectMonthlyDox', ProjectMonthlyDoxAPI, basename='projectMonthlyDox')
-router.register('api/approvedInvoiceDox', ApprovedInvoiceDoxAPI, basename='hseReportDox')
+router.register('api/approvedInvoiceDox', ApprovedInvoiceDoxAPI, basename='approvedInvoiceDox')
 router.register('api/zones', ZoneAPI, basename='zones')
 
 # router.register('api/reportVisit', ReportVisitAPI, basename='reportVisit')

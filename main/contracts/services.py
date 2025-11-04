@@ -1,12 +1,16 @@
+"""
+Services for the contracts application.
+"""
 import datetime
 import math
 import jdatetime
+from django.db.models import Max
 
 
-'''
-    Change Gregorian Date To Shamsi Date
-'''
 def GregorianToShamsi(date):
+    """
+    Convert Gregorian date to Shamsi date.
+    """
     # gregorian_date = jdatetime.date(1400,5,24).togregorian()
     try:
         jDate = jdatetime.date.fromgregorian(day=date.day,month=date.month,year=date.year)
@@ -14,7 +18,11 @@ def GregorianToShamsi(date):
     except Exception as e:
         return str(e)
     
+
 def GregorianToShamsiShow(date):
+    """
+    Convert Gregorian date to Shamsi date for display.
+    """
     # gregorian_date = jdatetime.date(1400,5,24).togregorian()
     try:
         jDate = jdatetime.date.fromgregorian(day=date.day,month=date.month,year=date.year)
@@ -24,6 +32,9 @@ def GregorianToShamsiShow(date):
     
         
 def GregorianToShamsi1(date):
+    """
+    Convert Gregorian date to Shamsi date.
+    """
     y = (math.trunc(date.timestamp()) + 467066.53004084 - 0.641087919916919581508) / 365.24219878
     y1 = y - math.trunc(datetime.datetime.fromtimestamp(y))
 
@@ -44,5 +55,4 @@ def GregorianToShamsi1(date):
     result = str(math.trunc(datetime.datetime.fromtimestamp(y))) + '/' + mm + '/' + dd
     
     return result
-
 

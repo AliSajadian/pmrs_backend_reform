@@ -1,0 +1,5 @@
+[MASTER]
+load-plugins=pylint_django
+
+[PYLINT_DJANGO]
+django-settings-module=main.settings

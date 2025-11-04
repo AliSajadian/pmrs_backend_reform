@@ -1,5 +1,8 @@
+"""
+URLs for the projects application.
+"""
 from rest_framework import routers
-from django.urls import path, include
+from django.urls import path
 
 from .api import *
        
@@ -35,10 +38,10 @@ urlpatterns = [
     path('api/timeProgressStates/contractMonthList/', TimeProgressStateAPI.as_view({"post": "contractMonthList"})),
     path('api/invoices/contractMonthList/', InvoiceAPI.as_view({"post": "contractMonthList"})),
     path('api/financialInvoices/contractMonthList/', FinancialInvoiceAPI.as_view({"post": "contractMonthList"})),
-    path('api/workVolumes/contractMonthList/', WorkVolumeAPI.as_view({"post": "contractMonthList"})),
     path('api/pmsProgresses/contractMonthList/', PmsprogressAPI.as_view({"post": "contractMonthList"})),
     path('api/budgetCosts/contractMonthList/', BudgetCostAPI.as_view({"post": "contractMonthList"})),
     path('api/budgetCosts/setAdminDescription/', BudgetCostAPI.as_view({"put": "setAdminDescription"})),
+    path('api/workVolumes/contractMonthList/', WorkVolumeAPI.as_view({"post": "contractMonthList"})),
     path('api/machineries/contractMonthList/', MachineryAPI.as_view({"post": "contractMonthList"})),
     path('api/projectPersonals/contractMonthList/', ProjectPersonalAPI.as_view({"post": "contractMonthList"})),
     path('api/problems/contractMonthList/', ProblemAPI.as_view({"post": "contractMonthList"})),

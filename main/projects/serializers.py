@@ -1,3 +1,6 @@
+"""
+Serializers for the projects application.
+"""
 from rest_framework import serializers
 
 from contracts.models import EpcCorporation
@@ -6,6 +9,9 @@ from projects.models import *
 
 #=========== Contract Serializers ============
 class ReportDateSerializerEx(serializers.ModelSerializer):
+    """
+    Serializer for the ReportDate model.
+    """
     shamsiDate = serializers.ReadOnlyField()
     class Meta:
         model = ReportDate
@@ -13,11 +19,18 @@ class ReportDateSerializerEx(serializers.ModelSerializer):
         
 
 class ReportConfirmSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ReportConfirm model.
+    """
     class Meta:
         model = ReportConfirm
         fields = '__all__'  
 
+
 class ReportsConfirmedSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ReportsConfirmed model.
+    """
     userconfirmshamsidate = serializers.ReadOnlyField()
     pmconfirmshamsidate = serializers.ReadOnlyField()
     userconfirmer = serializers.ReadOnlyField() 
@@ -28,22 +41,33 @@ class ReportsConfirmedSerializer(serializers.ModelSerializer):
 
         
 class SystemAdministratorReportConfirmSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the SystemAdministratorReportConfirm model.
+    """
     saconfirmshamsidate = serializers.ReadOnlyField()
     userconfirmer = serializers.ReadOnlyField() 
 
     class Meta:
         model = ReportConfirm
         fields = ("userconfirmer", "sa_c", "saconfirmshamsidate")
-        
+
+
 class ProjectManagerReportConfirmSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProjectManagerReportConfirm model.
+    """
     pmconfirmshamsidate = serializers.ReadOnlyField()
     userconfirmer = serializers.ReadOnlyField() 
 
     class Meta:
         model = ReportConfirm
         fields = ("userconfirmer", "pm_c", "pmconfirmshamsidate") 
-        
+
+
 class CoordinatorReportConfirmSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the CoordinatorReportConfirm model.
+    """
     userconfirmshamsidate = serializers.ReadOnlyField()
     userconfirmer = serializers.ReadOnlyField() 
     
@@ -53,6 +77,9 @@ class CoordinatorReportConfirmSerializer(serializers.ModelSerializer):
 
                 
 class FinancialInfoSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the FinancialInfo model.
+    """
     # isconfirmed = serializers.ReadOnlyField()
     # confirmdate = serializers.ReadOnlyField()
 
@@ -68,13 +95,20 @@ class FinancialInfoSerializer(serializers.ModelSerializer):
         #           "cumulativeclientpayment_fc", "clientprepaymentdeferment_r", "clientprepaymentdeferment_fc", "estcost_r", "estcost_fc", 
         #           "estclientpayment_r", "estclientpayment_fc", "estdebitcredit_r", "estdebitcredit_fc", "isconfirmed", "confirmdate")
 
+
 class FinancialInfoReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the FinancialInfoReport model.
+    """
     class Meta:
         model = FinancialInfo
         fields = ("estdebitcredit_r", "estcost_r", "estclientpayment_r")
 
 
 class HseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Hse model.
+    """
     # isconfirmed = serializers.ReadOnlyField()
     # confirmdate = serializers.ReadOnlyField()
 
@@ -84,7 +118,11 @@ class HseSerializer(serializers.ModelSerializer):
         # fields = ("financialinfoid", "contractid", "dateid", "", "lastclaimedinvoice_r", "lastclaimedinvoice_fc", 
         #           "lci_no", "woundno", "disadvantageeventno", "isconfirmed", "confirmdate")
          
+
 class HseReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the HseReport model.
+    """
     totaldeathno = serializers.ReadOnlyField()
     totalwoundno = serializers.ReadOnlyField()
     totaldisadvantageeventno = serializers.ReadOnlyField()
@@ -95,6 +133,9 @@ class HseReportSerializer(serializers.ModelSerializer):
 
          
 class ProgressStateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProgressState model.
+    """
     # row_number = serializers.ReadOnlyField() , "row_number"
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
@@ -138,14 +179,24 @@ class ProgressStateSerializer(serializers.ModelSerializer):
         fields = ("progressstateid", "contractid", "dateid", "plan_replan", "pp_e", "ap_e", "pp_p", "ap_p", 
                   "pp_c", "ap_c", "pp_t", "ap_t", "pr_t", "pfc_t", "year", "month")         
 
+
 class ProgressStateReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProgressStateReport model.
+    """
+    approximateProjectFinishShamsiDate = serializers.ReadOnlyField()
     persian6Month = serializers.ReadOnlyField()
 
     class Meta:
         model = ProgressState
-        fields = ("pp_e", "ap_e", "pp_p", "ap_p", "pp_c", "ap_c", "pp_t", "ap_t", "pr_t", "pfc_t", "persian6Month")
-                        
+        fields = ("pp_e", "ap_e", "pp_p", "ap_p", "pp_c", "ap_c", "pp_t", "ap_t", "pr_t", "pfc_t", 
+                  "approximateProjectFinishShamsiDate", "persian6Month")
+
+
 class TimeProgressStateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the TimeProgressState model.
+    """
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
     eep_shamsiDate = serializers.ReadOnlyField()
@@ -171,6 +222,9 @@ class TimeProgressStateSerializer(serializers.ModelSerializer):
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Invoice model.
+    """
     # sendshamsidate = serializers.ReadOnlyField() 
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
@@ -185,6 +239,9 @@ class InvoiceSerializer(serializers.ModelSerializer):
                   "cp_pp_r", "cp_pp_fc", "pp_pp_r", "pp_pp_fc", "r", "m", "description")
 
 class InvoiceReport1Serializer(serializers.ModelSerializer):
+    """
+    Serializer for the InvoiceReport1 model.
+    """
     confirmedInvoiceAmounts = serializers.ReadOnlyField()
     sentInvoiceAmounts = serializers.ReadOnlyField()
     receivePercent = serializers.ReadOnlyField()
@@ -197,7 +254,11 @@ class InvoiceReport1Serializer(serializers.ModelSerializer):
                   "confirmedInvoiceAmounts", "sentInvoiceAmounts", "aci_g_r", "icc_g_r", "aca_g_r", "acc_g_r", "ew_g_r", "ewcc_g_r",
                   "receivePercent")
 
+
 class InvoiceReport2Serializer(serializers.ModelSerializer):
+    """
+    Serializer for the InvoiceReport2 model.
+    """
     confirmedAmount = serializers.ReadOnlyField()
     totalCumulativeReceiveAmount = serializers.ReadOnlyField()
     persianMonth = serializers.ReadOnlyField()
@@ -208,6 +269,9 @@ class InvoiceReport2Serializer(serializers.ModelSerializer):
 
 
 class FinancialInvoiceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the FinancialInvoice model.
+    """
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
 
@@ -220,7 +284,11 @@ class FinancialInvoiceSerializer(serializers.ModelSerializer):
                    "cvat_fc", "cpi_r", "cpi_fc", "ccpi_a_r", "ccpi_a_fc", "ccpi_a_vat_r", "ccpi_a_vat_fc", "ccpi_a_vat_ew_r", 
                    "ccpi_a_vat_ew_fc", "cp_pp_r", "cp_pp_fc", "pp_pp_r", "pp_pp_fc", "r", "m", "typevalue")
 
+
 class FinancialInvoiceReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the FinancialInvoiceReport model.
+    """
     financialDepartmentConfirmedAmount = serializers.IntegerField()
     persianMonth = serializers.ReadOnlyField()
     
@@ -230,6 +298,9 @@ class FinancialInvoiceReportSerializer(serializers.ModelSerializer):
 
 
 class WorkvolumeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Workvolume model.
+    """
     # row_number = serializers.ReadOnlyField() , "row_number"
 
     class Meta:
@@ -239,6 +310,9 @@ class WorkvolumeSerializer(serializers.ModelSerializer):
 
     
 class PmsprogressSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Pmsprogress model.
+    """
     # row_number = serializers.ReadOnlyField() , "row_number"
 
     class Meta:
@@ -248,6 +322,9 @@ class PmsprogressSerializer(serializers.ModelSerializer):
 
 
 class BudgetCostSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the BudgetCost model.
+    """
     # row_number = serializers.ReadOnlyField() , "row_number"
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
@@ -258,7 +335,11 @@ class BudgetCostSerializer(serializers.ModelSerializer):
         fields = ("budgetcostid", "contractid", "dateid", "bac_r", "bac_fc", "eac_r", "eac_fc", "ev_r", 
                   "ev_fc", "ac_r", "ac_fc", "description", "year", "month", "isConfirmed")
 
+
 class BudgetCostReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the BudgetCostReport model.
+    """
     persianMonth = serializers.ReadOnlyField()
     class Meta:
         model = Budgetcost
@@ -266,6 +347,9 @@ class BudgetCostReportSerializer(serializers.ModelSerializer):
 
 
 class MachinerySerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Machinery model.
+    """
     # row_number = serializers.ReadOnlyField() , "row_number"
 
     class Meta:
@@ -275,6 +359,9 @@ class MachinerySerializer(serializers.ModelSerializer):
 
 
 class ProjectPersonalSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProjectPersonal model.
+    """
     cotno = serializers.ReadOnlyField()
     wstno = serializers.ReadOnlyField()
     year = serializers.ReadOnlyField()
@@ -286,15 +373,24 @@ class ProjectPersonalSerializer(serializers.ModelSerializer):
         fields = ("projectpersonelid", "contractid", "dateid", "copmpno", "coepno", "coppno", 
                   "cocpno", "wscpno", "wscaopno", "wsaopno", "cotno", "wstno", "description", "year", "month")
 
+
 class ProjectPersonalReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProjectPersonalReport model.
+    """
+    cotno = serializers.ReadOnlyField()
+    wstno = serializers.ReadOnlyField()
     persianMonth = serializers.ReadOnlyField()
 
     class Meta:
         model = ProjectPersonnel
-        fields = ("dpno", "dcpno", "mepno", "persianMonth")
+        fields = ("cotno", "wstno", "persianMonth")
 
 
 class ProblemSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Problem model.
+    """
     # row_number = serializers.ReadOnlyField() , "row_number"
 
     class Meta:
@@ -303,6 +399,9 @@ class ProblemSerializer(serializers.ModelSerializer):
 
 
 class CriticalActionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the CriticalAction model.
+    """
     # row_number = serializers.ReadOnlyField() , "row_number"
     
     class Meta:

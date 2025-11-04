@@ -1,3 +1,8 @@
+"""
+URLs for the accounts application.
+
+This module contains the URLs for the accounts application.
+"""
 from rest_framework import routers
 from django.urls import path, include
 from knox import views as knox_views
@@ -13,8 +18,10 @@ router.register('api/auth/grouppermissions', GroupPermissionsAPI, 'grouppermissi
 
 urlpatterns = [
     path('api/auth', include('knox.urls')),
-    path('api/auth/', LoginExAPI.as_view()),
+    path('api/auth/loginEx', LoginExAPI.as_view()),
     path('api/auth/login', LoginAPI.as_view()),
+    # path("api/auth/logout/", LogoutAPI.as_view(), name="user-logout"),
+    # path("api/auth/refresh/", CookieTokenRefreshAPI.as_view(), name="token-refresh"),
     path("api/auth/changePassword", PasswordAPIView.as_view(), name="changePassword"),
     path('api/contractConfirmers/<int:contractid>/', ProjectConfirmersAPI.as_view(), name='contractConfirmers'),
 ]

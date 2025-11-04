@@ -1,0 +1,51 @@
+INFO 2025-11-01 14:57:18,311 autoreload Watching for file changes with StatReloader
+INFO 2025-11-01 15:00:31,265 autoreload Watching for file changes with StatReloader
+INFO 2025-11-01 15:02:09,598 autoreload Watching for file changes with StatReloader
+INFO 2025-11-01 15:04:11,194 basehttp "OPTIONS /api/auth/login HTTP/1.1" 200 0
+INFO 2025-11-01 15:04:12,587 basehttp "POST /api/auth/login HTTP/1.1" 200 274
+INFO 2025-11-01 15:11:52,485 basehttp "POST /api/auth/login HTTP/1.1" 200 274
+INFO 2025-11-01 15:18:43,380 basehttp "POST /api/auth/login HTTP/1.1" 200 274
+INFO 2025-11-01 15:27:10,436 basehttp "POST /api/auth/login HTTP/1.1" 200 274
+INFO 2025-11-01 15:27:10,611 basehttp "OPTIONS /api/contracts/100060 HTTP/1.1" 200 0
+INFO 2025-11-01 15:27:10,631 basehttp "OPTIONS /api/reportDates HTTP/1.1" 200 0
+INFO 2025-11-01 15:27:10,674 basehttp "OPTIONS /api/reportDates HTTP/1.1" 200 0
+INFO 2025-11-01 15:27:10,759 basehttp "GET /api/contracts/100060 HTTP/1.1" 301 0
+INFO 2025-11-01 15:27:10,763 basehttp "GET /assets/user_images/asft.png HTTP/1.1" 200 43943
+INFO 2025-11-01 15:27:10,841 basehttp "OPTIONS /api/contracts/100060/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:27:10,842 basehttp "OPTIONS /api/contracts/100060/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:27:11,176 basehttp "GET /api/contracts/100060/ HTTP/1.1" 200 30
+INFO 2025-11-01 15:27:11,247 basehttp "GET /api/contracts/100060/ HTTP/1.1" 200 30
+INFO 2025-11-01 15:27:11,896 basehttp "GET /api/reportDates HTTP/1.1" 200 8931
+INFO 2025-11-01 15:27:11,969 basehttp "GET /api/reportDates HTTP/1.1" 200 8931
+INFO 2025-11-01 15:28:43,079 basehttp "OPTIONS /api/financialInfos/contractMonthReportList/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,127 basehttp "OPTIONS /api/invoices/contractMonthReportList2/0/7137 HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,128 basehttp "OPTIONS /api/invoices/contractMonthReportList1/0/7137 HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,176 basehttp "OPTIONS /api/hses/contractMonthReportList/0/7137 HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,277 basehttp "OPTIONS /api/progressStates/contractMonthReportList/0/7137 HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,377 basehttp "OPTIONS /api/budgetCosts/contractMonthReportList/0/7137 HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,382 basehttp "GET /api/invoices/contractMonthReportList1/0/7137 HTTP/1.1" 301 0
+INFO 2025-11-01 15:28:43,401 basehttp "GET /api/hses/contractMonthReportList/0/7137 HTTP/1.1" 301 0
+INFO 2025-11-01 15:28:43,408 basehttp "GET /api/invoices/contractMonthReportList2/0/7137 HTTP/1.1" 301 0
+INFO 2025-11-01 15:28:43,409 basehttp "OPTIONS /api/machineries/contractMonthReportList/0/7137 HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,435 basehttp "GET /api/progressStates/contractMonthReportList/0/7137 HTTP/1.1" 301 0
+INFO 2025-11-01 15:28:43,437 basehttp "OPTIONS /api/projectPersonals/contractMonthReportList/0/7137 HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,462 basehttp "OPTIONS /api/hses/contractMonthReportList/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,472 basehttp "OPTIONS /api/invoices/contractMonthReportList1/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,503 basehttp "GET /api/budgetCosts/contractMonthReportList/0/7137 HTTP/1.1" 301 0
+INFO 2025-11-01 15:28:43,504 basehttp "OPTIONS /api/invoices/contractMonthReportList2/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,567 basehttp "GET /api/machineries/contractMonthReportList/0/7137 HTTP/1.1" 301 0
+INFO 2025-11-01 15:28:43,568 basehttp "OPTIONS /api/progressStates/contractMonthReportList/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,569 basehttp "GET /api/projectPersonals/contractMonthReportList/0/7137 HTTP/1.1" 301 0
+INFO 2025-11-01 15:28:43,577 basehttp "OPTIONS /api/budgetCosts/contractMonthReportList/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,619 basehttp "OPTIONS /api/machineries/contractMonthReportList/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,662 basehttp "OPTIONS /api/projectPersonals/contractMonthReportList/0/7137/ HTTP/1.1" 200 0
+INFO 2025-11-01 15:28:43,752 basehttp "GET /api/invoices/contractMonthReportList1/0/7137/ HTTP/1.1" 200 163
+INFO 2025-11-01 15:28:43,774 basehttp "GET /api/machineries/contractMonthReportList/0/7137/ HTTP/1.1" 200 30
+INFO 2025-11-01 15:28:43,790 basehttp "GET /api/financialInfos/contractMonthReportList/0/7137/ HTTP/1.1" 200 96
+INFO 2025-11-01 15:28:43,805 basehttp "GET /api/progressStates/contractMonthReportList/0/7137/ HTTP/1.1" 200 30
+ERROR 2025-11-01 15:28:43,836 log Internal Server Error: /api/projectPersonals/contractMonthReportList/0/7137/
+ERROR 2025-11-01 15:28:43,837 basehttp "GET /api/projectPersonals/contractMonthReportList/0/7137/ HTTP/1.1" 500 69
+INFO 2025-11-01 15:28:43,877 basehttp "GET /api/hses/contractMonthReportList/0/7137/ HTTP/1.1" 200 79
+INFO 2025-11-01 15:28:43,908 basehttp "GET /api/invoices/contractMonthReportList2/0/7137/ HTTP/1.1" 200 30
+ERROR 2025-11-01 15:28:43,962 log Internal Server Error: /api/budgetCosts/contractMonthReportList/0/7137/
+ERROR 2025-11-01 15:28:43,962 basehttp "GET /api/budgetCosts/contractMonthReportList/0/7137/ HTTP/1.1" 500 69

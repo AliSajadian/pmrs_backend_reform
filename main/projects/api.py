@@ -1,22 +1,34 @@
-# from django.http import Http404
+"""
+API for the projects application.
+"""
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Max, Q
-# from django.db.models.functions import Substr
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from contracts.models import *
 from contracts.services import GregorianToShamsi
 from projects_files.services import SetReportVisit
-from projects.models import *
-from .serializers import *
+from projects.models import ReportDate, ReportConfirm, FinancialInfo, Hse, ProgressState, \
+    TimeprogressState, Invoice, FinancialInvoice, WorkVolume, PmsProgress, Budgetcost, Problem, \
+        CriticalAction, ContractReportDate, Machinary, ProjectPersonnel 
+from .serializers import ReportDateSerializerEx, ReportConfirmSerializer, ReportsConfirmedSerializer, \
+    ProjectManagerReportConfirmSerializer, CoordinatorReportConfirmSerializer, FinancialInfoSerializer, \
+        FinancialInfoReportSerializer, HseSerializer, ProgressStateSerializer, TimeProgressStateSerializer, \
+            InvoiceSerializer, FinancialInvoiceSerializer, WorkvolumeSerializer, PmsprogressSerializer, \
+                BudgetCostSerializer, MachinerySerializer, ProjectPersonalSerializer, ProblemSerializer, \
+                    CriticalActionSerializer, HseReportSerializer, ProgressStateReportSerializer, \
+                        InvoiceReport1Serializer, InvoiceReport2Serializer, FinancialInvoiceReportSerializer, \
+                            BudgetCostReportSerializer, ProjectPersonalReportSerializer
 
 
 class ReportDateAPIEx(APIView):
+    """
+    API for the ReportDate model.
+    """
     permission_classes = [
         permissions.IsAuthenticated
     ]
@@ -31,7 +43,10 @@ class ReportDateAPIEx(APIView):
         if user read ReportDate model after a few months then system create a record for 
         each of those months to reach to last month
     '''
-    def get(self, request):
+    def get(self, *args, **kwargs):
+        """
+        Get the report dates.
+        """
         max_date_id = ReportDate.objects.aggregate(Max('dateid'))['dateid__max']
         date = ReportDate.objects.get(pk=max_date_id)
         y1 = int(date.year)
@@ -93,6 +108,9 @@ class ReportDateAPIEx(APIView):
     
     
 class ReportConfirmAPI(viewsets.ModelViewSet):
+    """
+    API for the ReportConfirm model.
+    """
     queryset = ReportConfirm.objects.all()
     serializer_class = ReportConfirmSerializer
     # permission_classes = [
@@ -101,7 +119,10 @@ class ReportConfirmAPI(viewsets.ModelViewSet):
 
 
     @action(detail=False, methods=['get'])   
-    def getConfirmedReports(self, request, *args, **kwargs):
+    def getConfirmedReports(self, *args, **kwargs):
+        """
+        Get the confirmed reports.
+        """
         try:
             contractId = int(kwargs["contract_id"])
             dateId = int(kwargs["date_id"])
@@ -117,6 +138,9 @@ class ReportConfirmAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])   
     def isProjectManagerConfirmedReport(self, request, *args, **kwargs):
+        """
+        Check if the project manager has confirmed the report.
+        """
         try:
             data = request.data
             contractId = int(data["contractid"])
@@ -134,6 +158,9 @@ class ReportConfirmAPI(viewsets.ModelViewSet):
         
     @action(detail=False, methods=['post'])   
     def projectManagerReportConfirm(self, request, *args, **kwargs):
+        """
+        Confirm the project manager report.
+        """
         try:
             data = request.data
             contractId = int(data["contractid"])
@@ -168,6 +195,9 @@ class ReportConfirmAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])   
     def isCoordinatorConfirmedReport(self, request, *args, **kwargs):
+        """
+        Check if the coordinator has confirmed the report.
+        """
         try:
             data = request.data
             contractId = int(data["contractid"])
@@ -184,6 +214,9 @@ class ReportConfirmAPI(viewsets.ModelViewSet):
     # =======
     @action(detail=False, methods=['post'])   
     def coordinatorReportConfirm(self, request, *args, **kwargs):
+        """
+        Confirm the coordinator report.
+        """
         try:
             data = request.data
             contractId = int(data["contractid"])
@@ -221,6 +254,9 @@ class ReportConfirmAPI(viewsets.ModelViewSet):
     
     
 class FinancialInfoAPI(viewsets.ModelViewSet):
+    """
+    API for the FinancialInfo model.
+    """
     queryset = FinancialInfo.objects.all()
     serializer_class = FinancialInfoSerializer
     permission_classes = [
@@ -229,6 +265,9 @@ class FinancialInfoAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the financial info for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -252,7 +291,10 @@ class FinancialInfoAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the financial info for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -265,6 +307,9 @@ class FinancialInfoAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods='post')
     def updateFinancialInfo(self, request, *args, **kwargs):
+        """
+        Update the financial info.
+        """
         try:
             financialInfoId = int(kwargs["financialInfoId"])
             
@@ -375,6 +420,9 @@ class FinancialInfoAPI(viewsets.ModelViewSet):
 
 
 class HseAPI(viewsets.ModelViewSet):
+    """
+    API for the Hse model.
+    """
     queryset = Hse.objects.all()
     serializer_class = HseSerializer
     permission_classes = [
@@ -383,6 +431,9 @@ class HseAPI(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the HSE for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -407,7 +458,10 @@ class HseAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the HSE for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -420,6 +474,9 @@ class HseAPI(viewsets.ModelViewSet):
 
 
 class ProgressStateAPI(viewsets.ModelViewSet):
+    """
+    API for the ProgressState model.
+    """
     queryset = ProgressState.objects.all()
     serializer_class = ProgressStateSerializer
     permission_classes = [
@@ -427,7 +484,10 @@ class ProgressStateAPI(viewsets.ModelViewSet):
     ]
 
     @action(detail=True, methods=['post'])
-    def contractMonthList(self, request, *args, **kwargs):
+    def contractMonthList(self, request, *args, **kwargs):      
+        """
+        Get the progress state for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -454,7 +514,10 @@ class ProgressStateAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the progress state for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -467,6 +530,9 @@ class ProgressStateAPI(viewsets.ModelViewSet):
  
  
 class TimeProgressStateAPI(viewsets.ModelViewSet):
+    """
+    API for the TimeProgressState model.
+    """
     queryset = TimeprogressState.objects.all()
     serializer_class = TimeProgressStateSerializer
     permission_classes = [
@@ -475,6 +541,9 @@ class TimeProgressStateAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the time progress state for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -505,6 +574,9 @@ class TimeProgressStateAPI(viewsets.ModelViewSet):
 
 
 class InvoiceAPI(viewsets.ModelViewSet):
+    """
+    API for the Invoice model.
+    """
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = [
@@ -513,6 +585,9 @@ class InvoiceAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the invoice for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -573,6 +648,9 @@ class InvoiceAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def contractMonthReportList1(self, request, *args, **kwargs):
+        """
+        Get the invoice for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -585,6 +663,9 @@ class InvoiceAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractMonthReportList2(self, request, *args, **kwargs):
+        """
+        Get the invoice for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -597,6 +678,9 @@ class InvoiceAPI(viewsets.ModelViewSet):
 
 
 class FinancialInvoiceAPI(viewsets.ModelViewSet):
+    """
+    API for the FinancialInvoice model.
+    """
     queryset = FinancialInvoice.objects.all()
     serializer_class = FinancialInvoiceSerializer
     permission_classes = [
@@ -605,6 +689,9 @@ class FinancialInvoiceAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the financial invoice for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -672,7 +759,10 @@ class FinancialInvoiceAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the work volume for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -685,6 +775,9 @@ class FinancialInvoiceAPI(viewsets.ModelViewSet):
 
 
 class WorkVolumeAPI(viewsets.ModelViewSet):
+    """
+    API for the WorkVolume model.
+    """
     queryset = WorkVolume.objects.all()
     serializer_class = WorkvolumeSerializer
     permission_classes = [
@@ -693,6 +786,9 @@ class WorkVolumeAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the work volume for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -740,6 +836,9 @@ class WorkVolumeAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractMonthReportList(self, request, *args, **kwargs):
+        """
+        Get the work volume for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -752,6 +851,9 @@ class WorkVolumeAPI(viewsets.ModelViewSet):
 
 
 class PmsprogressAPI(viewsets.ModelViewSet):
+    """
+    API for the PmsProgress model.
+    """
     queryset = PmsProgress.objects.all()
     serializer_class = PmsprogressSerializer
     permission_classes = [
@@ -760,6 +862,9 @@ class PmsprogressAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the PMS progress for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -806,7 +911,10 @@ class PmsprogressAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
  
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the PMS progress for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -819,6 +927,9 @@ class PmsprogressAPI(viewsets.ModelViewSet):
  
 
 class BudgetCostAPI(viewsets.ModelViewSet):
+    """
+    API for the BudgetCost model.
+    """
     queryset = Budgetcost.objects.all()
     serializer_class = BudgetCostSerializer
     permission_classes = [
@@ -827,6 +938,9 @@ class BudgetCostAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the budget cost for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -853,6 +967,9 @@ class BudgetCostAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['put'])
     def setAdminDescription(self, request, *args, **kwargs):
+        """
+        Set the admin description for the budget cost.
+        """
         try:
             data = request.data
             contractId = int(data["contractid"])
@@ -869,7 +986,10 @@ class BudgetCostAPI(viewsets.ModelViewSet):
 
 
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the budget cost for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -882,6 +1002,9 @@ class BudgetCostAPI(viewsets.ModelViewSet):
  
 
 class MachineryAPI(viewsets.ModelViewSet):
+    """
+    API for the Machinery model.
+    """
     queryset = Machinary.objects.all()
     serializer_class = MachinerySerializer
     permission_classes = [
@@ -890,6 +1013,9 @@ class MachineryAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the machinery for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -974,7 +1100,10 @@ class MachineryAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the machinery for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])            
@@ -987,6 +1116,9 @@ class MachineryAPI(viewsets.ModelViewSet):
 
 
 class ProjectPersonalAPI(viewsets.ModelViewSet):
+    """
+    API for the ProjectPersonal model.
+    """
     queryset = ProjectPersonnel.objects.all()
     serializer_class = ProjectPersonalSerializer
     permission_classes = [
@@ -995,6 +1127,9 @@ class ProjectPersonalAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the project personal for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -1019,7 +1154,10 @@ class ProjectPersonalAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the project personal for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -1032,6 +1170,9 @@ class ProjectPersonalAPI(viewsets.ModelViewSet):
   
 
 class ProblemAPI(viewsets.ModelViewSet):
+    """
+    API for the Problem model.
+    """
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
     permission_classes = [
@@ -1040,6 +1181,9 @@ class ProblemAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the problem for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -1056,7 +1200,10 @@ class ProblemAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
  
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the problem for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -1069,6 +1216,9 @@ class ProblemAPI(viewsets.ModelViewSet):
   
   
 class CriticalActionAPI(viewsets.ModelViewSet):
+    """
+    API for the CriticalAction model.
+    """
     queryset = CriticalAction.objects.all()
     serializer_class = CriticalActionSerializer
     permission_classes = [
@@ -1077,6 +1227,9 @@ class CriticalActionAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the critical action for the contract month.
+        """
         try:
             data = request.data
             userId = int(data["userid"])
@@ -1093,7 +1246,10 @@ class CriticalActionAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, request, *args, **kwargs):
+    def contractMonthReportList(self, *args, **kwargs):
+        """
+        Get the critical action for the contract month report.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -1103,4 +1259,5 @@ class CriticalActionAPI(viewsets.ModelViewSet):
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 

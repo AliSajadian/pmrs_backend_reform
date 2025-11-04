@@ -1,3 +1,6 @@
+"""
+API for the projects_files application.
+"""
 import mimetypes
 from django.http import FileResponse
 from django.db.models import Max, Q, F
@@ -15,6 +18,9 @@ from projects_files.services import SetReportVisit
 
 
 class HseReportDoxAPI(viewsets.ModelViewSet):
+    """
+    API for the HseReportDox model.
+    """
     queryset = HseReportDox.objects.all()
     serializer_class = HseReportDoxSerializers
     permission_classes = [
@@ -24,6 +30,9 @@ class HseReportDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractList(self, request, *args, **kwargs):
+        """
+        Get the contract list for the HseReportDox model.
+        """
         try:
             contractId = int(kwargs["contractid"])
             hseReportDox = HseReportDox.objects.filter(contractid__exact=contractId)
@@ -34,6 +43,9 @@ class HseReportDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def download(self, request, *args, **kwargs):
+        """
+        Download the HseReportDox model.
+        """
         try:
             id = int(kwargs["id"])
             hseReportDox = HseReportDox.objects.get(pk=id)
@@ -140,6 +152,9 @@ class HseReportDoxAPI(viewsets.ModelViewSet):
 
 
 class ProjectDoxAPI(viewsets.ModelViewSet):
+    """
+    API for the ProjectDox model.
+    """
     queryset = ProjectDox.objects.all()
     serializer_class = ProjectDoxSerializers
     permission_classes = [
@@ -149,6 +164,9 @@ class ProjectDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractList(self, request, *args, **kwargs):
+        """
+        Get the contract list for the ProjectDox model.
+        """
         try:
             # data = request.data
             userId = int(kwargs["userid"])
@@ -166,6 +184,9 @@ class ProjectDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def download(self, request, *args, **kwargs):
+        """
+        Download the ProjectDox model.
+        """
         try:
             id = int(kwargs["id"])
             projectDox = ProjectDox.objects.get(pk=id)
@@ -183,6 +204,9 @@ class ProjectDoxAPI(viewsets.ModelViewSet):
  
  
 class ContractorDoxAPI(viewsets.ModelViewSet):
+    """
+    API for the ContractorDox model.
+    """
     queryset = ContractorDox.objects.all()
     serializer_class = ContractorDoxSerializers
     permission_classes = [
@@ -192,6 +216,9 @@ class ContractorDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractList(self, request, *args, **kwargs):
+        """
+        Get the contract list for the ContractorDox model.
+        """
         try:
             contractId = int(kwargs["contractid"])
             contractorDox = ContractorDox.objects.filter(contractid__exact=contractId)
@@ -202,6 +229,9 @@ class ContractorDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def download(self, request, *args, **kwargs):
+        """
+        Download the ContractorDox model.
+        """
         try:
             id = int(kwargs["id"])
             contractorDox = ContractorDox.objects.get(pk=id)
@@ -219,6 +249,9 @@ class ContractorDoxAPI(viewsets.ModelViewSet):
  
  
 class ProjectMonthlyDoxAPI(viewsets.ModelViewSet):
+    """
+    API for the ProjectMonthlyDox model.
+    """
     queryset = ProjectMonthlyDox.objects.all()
     serializer_class = ProjectMonthlyDoxSerializers
     permission_classes = [
@@ -228,6 +261,9 @@ class ProjectMonthlyDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractList(self, request, *args, **kwargs):
+        """
+        Get the contract list for the ProjectMonthlyDox model.
+        """
         try:
             # data = request.data
             userId = int(kwargs["userid"])
@@ -245,6 +281,9 @@ class ProjectMonthlyDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def download(self, request, *args, **kwargs):
+        """
+        Download the ProjectMonthlyDox model.
+        """
         try:
             id = int(kwargs["id"])
             projectMonthlyDox = ProjectMonthlyDox.objects.get(pk=id)
@@ -262,6 +301,9 @@ class ProjectMonthlyDoxAPI(viewsets.ModelViewSet):
  
  
 class ApprovedInvoiceDoxAPI(viewsets.ModelViewSet):
+    """
+    API for the ApprovedInvoiceDox model.
+    """
     queryset = InvoiceDox.objects.all()
     serializer_class = ApprovedInvoiceDoxSerializers
     permission_classes = [
@@ -271,6 +313,9 @@ class ApprovedInvoiceDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractMonthList(self, request, *args, **kwargs):
+        """
+        Get the contract list for the ApprovedInvoiceDox model.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -282,6 +327,9 @@ class ApprovedInvoiceDoxAPI(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def download(self, request, *args, **kwargs):
+        """
+        Download the ApprovedInvoiceDox model.
+        """
         try:
             id = int(kwargs["id"])
             approvedInvoiceDox = InvoiceDox.objects.get(pk=id)
@@ -299,12 +347,18 @@ class ApprovedInvoiceDoxAPI(viewsets.ModelViewSet):
  
  
 class ReportDoxAPI(APIView):
+    """
+    API for the ReportDox model.
+    """
     permission_classes = [
         permissions.IsAuthenticated
     ]
     parser_classes = [MultiPartParser, FormParser]
 
     def get(self, format=None):
+        """
+        Get the report list for the ReportDox model.
+        """
         try:
             reportDox = ReportDox.objects.all()
             serializer = ReportDoxSerializers(data=reportDox)
@@ -314,6 +368,9 @@ class ReportDoxAPI(APIView):
 
 
     def post(self, request, format=None):
+        """
+        Create a new report for the ReportDox model.
+        """
         try:
             serializer = ReportDoxSerializers(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -324,6 +381,9 @@ class ReportDoxAPI(APIView):
 
 
 class ZoneAPI(viewsets.ModelViewSet):
+    """
+    API for the Zone model.
+    """
     queryset = Zone.objects.all()
     serializer_class = ZoneSerializers
     permission_classes = [
@@ -332,6 +392,9 @@ class ZoneAPI(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def contractZoneList(self, request, *args, **kwargs):
+        """
+        Get the contract list for the Zone model.
+        """
         try:
             contractId = int(kwargs["contractid"])
             zones = Zone.objects.filter(contractid__exact=contractId)
@@ -344,6 +407,9 @@ class ZoneAPI(viewsets.ModelViewSet):
 @api_view(['post'])
 @permission_classes([permissions.IsAuthenticated])
 def getContractZoneImages(request):
+    """
+    Get the contract list for the Zone model.
+    """
     try:
         data = request.data
         userId = int(data["userid"])
@@ -376,6 +442,9 @@ def getContractZoneImages(request):
 @api_view(['put'])
 @permission_classes([permissions.IsAuthenticated])
 def updateZoneImage(request, pk):
+    """
+    Update the ZoneImage model.
+    """
     try:
         id = pk
         data = request.data
@@ -420,14 +489,21 @@ def updateZoneImage(request, pk):
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
 class ZoneImagesAPI(APIView):
+    """
+    API for the ZoneImages model.
+    """
     permission_classes = [
         permissions.IsAuthenticated
     ]
     parser_classes = [MultiPartParser, FormParser]
 
     def get(self, *args, **kwargs):
+        """
+        Get the zone images for the ZoneImages model.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -453,6 +529,9 @@ class ZoneImagesAPI(APIView):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, format=None):
+        """
+        Create a new zone image for the ZoneImages model.
+        """
         try:
             data = request.data
             contractId = int(data['contractid'])
@@ -487,6 +566,9 @@ class ZoneImagesAPI(APIView):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def put(self, request, pk, format=None):
+        """
+        Update the ZoneImage model.
+        """
         try:
             id = pk
             data = request.data
@@ -533,6 +615,9 @@ class ZoneImagesAPI(APIView):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def delete(self, request, pk, format=None):
+        """
+        Delete the ZoneImage model.
+        """
         try:
             id = pk
             zoneimage = ZoneImage.objects.get(pk=id)
@@ -577,6 +662,9 @@ class ZoneImagesAPI(APIView):
 @api_view(['get'])
 @permission_classes([permissions.IsAuthenticated])
 def getReportProjectZoneImages(request, zoneid):
+    """
+    Get the project zone images for the ZoneImages model.
+    """
     try:
         zoneId = zoneid
         zoneImages = ZoneImage.projectZoneImages.projectZoneImages(zoneId)
@@ -588,6 +676,9 @@ def getReportProjectZoneImages(request, zoneid):
 @api_view(['post'])
 @permission_classes([permissions.IsAuthenticated])
 def getReportSelectedProjectAllZonesImages(request, *args, **kwargs):
+    """
+    Get the selected project zone images for the ZoneImages model.
+    """
     try: 
         data = request.data
         contractsId = [int(contractId) for contractId in data]
@@ -602,6 +693,9 @@ def getReportSelectedProjectAllZonesImages(request, *args, **kwargs):
 @api_view(['post'])
 @permission_classes([permissions.IsAuthenticated])
 def getReportSelectedProjectAllZonesImagesEx(request, *args, **kwargs):
+    """
+    Get the selected project zone images for the ZoneImages model.
+    """
     try: 
         data = request.data
         contractsId = [int(contractId) for contractId in data]
@@ -617,6 +711,9 @@ def getReportSelectedProjectAllZonesImagesEx(request, *args, **kwargs):
 @api_view(['get'])
 @permission_classes([permissions.IsAuthenticated])
 def getReportAllProjectZonesImages(request, *args, **kwargs):
+    """
+    Get the all project zone images for the ZoneImages model.
+    """
     try:
         dateId = int(kwargs["dateid"])
 
@@ -629,6 +726,9 @@ def getReportAllProjectZonesImages(request, *args, **kwargs):
 @api_view(['get'])
 @permission_classes([permissions.IsAuthenticated])
 def getReportAllProjectZonesImagesEx(request, *args, **kwargs):
+    """
+    Get the all project zone images for the ZoneImages model.
+    """
     try:
         fromDateId = int(kwargs["fromDateid"])
         toDateId = int(kwargs["toDateid"])
@@ -639,12 +739,19 @@ def getReportAllProjectZonesImagesEx(request, *args, **kwargs):
     except Exception as e:
         return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class ReportVisitAPI(APIView):
+    """
+    API for the ReportVisit model.
+    """
     permission_classes = [
         permissions.IsAuthenticated
     ]
 
     def get(self, *args, **kwargs):
+        """
+        Get the report visits for the ReportVisit model.
+        """
         try:
             contractId = int(kwargs["contractid"])
             dateId = int(kwargs["dateid"])
@@ -656,8 +763,10 @@ class ReportVisitAPI(APIView):
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    
     def post(self, request):
+        """
+        Create a new report visit for the ReportVisit model.
+        """
         try:
             data = request.data
             contractId = int(data["contractid"])

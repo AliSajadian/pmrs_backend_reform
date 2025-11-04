@@ -1,3 +1,6 @@
+"""
+Services for the projects_files application.
+"""
 from django.contrib.auth import get_user_model
 from accounts.models import UserRole
 from contracts.models import Contract
@@ -6,6 +9,9 @@ from projects_files.models import ReportVisit, ReportVisitdate
 
 
 def SetReportVisit(userId, contractId, dateId, reportId):
+    """
+    Set the report visit for the projects_files application.
+    """
     try:       
         isManager = UserRole.objects.filter(userid__exact=userId, roleid__role__exact='Board').count()
         if isManager == 0:

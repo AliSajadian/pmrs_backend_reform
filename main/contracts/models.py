@@ -1,24 +1,32 @@
+"""
+Models for the contracts application.
+
+This module contains the models for the contracts application.
+"""
 import django
 from django.db import models
 from django.db.models import Sum, Max
 from django.conf import settings
-from django.utils import timezone
-from dateutil import relativedelta
 from datetime import datetime
-from datetime import date
 
 # from django.contrib.auth import get_user_model
 from django.contrib.auth import get_user_model
 from accounts.models import *
 from .services import GregorianToShamsi
-# Create your models here.
+
 
 class CompanyType(models.Model):
+    """
+    Company type model for the contracts application.
+    """
     companytypeid = models.AutoField(db_column='CompanyTypeID', primary_key=True)  
     companytype = models.CharField(db_column='CompanyType', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
     def __str__(self) -> str:
-        return self.companytype
+        """
+        Get the string representation of the CompanyType model.
+        """
+        return self.companytype if self.companytype is not None else ''
     
     class Meta:
         db_table = 'tbl_CompanyType'
@@ -27,6 +35,9 @@ class CompanyType(models.Model):
 
         
 class Company(models.Model):
+    """
+    Company model for the contracts application.
+    """
     companyid = models.AutoField(db_column='CompanyID', primary_key=True)  
     companytypeid = models.ForeignKey(CompanyType, models.DO_NOTHING, db_column='CompanyTypeID')  
     company = models.CharField(db_column='Company', max_length=200, db_collation='SQL_Latin1_General_CP1_CI_AS')  
@@ -35,8 +46,11 @@ class Company(models.Model):
     email = models.CharField(db_column='Email', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  
     address = models.CharField(db_column='Address', max_length=200, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  
 
-    def __str__(self) -> str:
-        return self.company
+    def __str__(self) -> str:   
+        """
+        Get the string representation of the Company model.
+        """
+        return self.company if self.company is not None else ''
     
     class Meta:
         db_table = 'tbl_Company'
@@ -45,11 +59,17 @@ class Company(models.Model):
 
 
 class Personeltype(models.Model):
+    """
+    Personel type model for the contracts application.
+    """
     personeltypeid = models.AutoField(db_column='PersonelTypeID', primary_key=True)  
     personeltype = models.CharField(db_column='PersonelType', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
     def __str__(self) -> str:
-        return self.personeltype
+        """
+        Get the string representation of the PersonelType model.
+        """
+        return self.personeltype if self.personeltype is not None else ''
     
     class Meta:
         db_table = 'tbl_PersonelType'
@@ -58,6 +78,9 @@ class Personeltype(models.Model):
 
         
 class Personel(models.Model):
+    """
+    Personel model for the contracts application.
+    """
     personelid = models.IntegerField(db_column='PersonelID', primary_key=True)  
     name = models.CharField(db_column='Name', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
     family = models.CharField(db_column='Family', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
@@ -76,11 +99,17 @@ class Personel(models.Model):
       
    
 class ContractType(models.Model):
+    """
+    Contract type model for the contracts application.
+    """
     contracttypeid = models.AutoField(db_column='ContractTypeID', primary_key=True)  
     contracttype = models.CharField(db_column='ContractType', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
     def __str__(self) -> str:
-        return self.contracttype
+        """
+        Get the string representation of the ContractType model.
+        """
+        return self.contracttype if self.contracttype is not None else ''
 
     class Meta:
         db_table = 'tbl_ContractType'
@@ -89,11 +118,17 @@ class ContractType(models.Model):
         
         
 class Country(models.Model):
+    """
+    Country model for the contracts application.
+    """
     countryid = models.AutoField(db_column='CountryID', primary_key=True)  
     country = models.CharField(db_column='Country', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
     def __str__(self) -> str:
-        return self.country
+        """
+        Get the string representation of the Country model.
+        """
+        return self.country if self.country is not None else ''
     
     class Meta:
         db_table = 'tbl_Country'
@@ -102,12 +137,18 @@ class Country(models.Model):
 
 
 class Currency(models.Model):
+    """
+    Currency model for the contracts application.
+    """
     currencyid = models.AutoField(db_column='CurrencyID', primary_key=True)  
     countryid = models.ForeignKey(Country, models.DO_NOTHING, db_column='CountryID')  
     currency = models.CharField(db_column='Currency', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
     def __str__(self) -> str:
-        return self.currency
+        """
+        Get the string representation of the Currency model.
+        """
+        return self.currency if self.currency is not None else ''
     
     class Meta:
         db_table = 'tbl_Currency'
@@ -116,6 +157,9 @@ class Currency(models.Model):
 
 
 class Contract(models.Model):
+    """
+    Contract model for the contracts application.
+    """
     contractid = models.AutoField(db_column='ContractID', primary_key=True, verbose_name='ContractID')  
     contractno = models.CharField(db_column='ContractNo', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', verbose_name='Contract No')  
     contracttypeid = models.ForeignKey(ContractType, related_name="ContractType_Contract", on_delete=models.CASCADE, db_column='ContractTypeID', verbose_name='Contract Type')  
@@ -159,41 +203,65 @@ class Contract(models.Model):
     completeddate = models.IntegerField(db_column='CompletedDate', blank=True, null=True, verbose_name='Completed Date')  
  
     def contractamount_r_(self):
+        """
+        Get the contract amount in Rial.
+        """
         return f"{self.contractamount_r:,}"
 
     def contractamount_fc_(self):
+        """
+        Get the contract amount in Foreign Currency.
+        """
         return f"{self.contractamount_fc:,}"
     
     def extraWorkPrice_r(self):
+        """
+        Get the extra work price in Rial.
+        """
         addendumamount_r_sum = Addendum.objects.filter(
             contractid__exact=self.contractid).aggregate(Sum('addendumamount_r'))['addendumamount_r__sum']
         result = (addendumamount_r_sum or 0)
         return f"{result:,}"
 
     def totalprice_r(self):
+        """
+        Get the total price in Rial.
+        """
         addendumamount_r_sum = Addendum.objects.filter(
             contractid__exact=self.contractid).aggregate(Sum('addendumamount_r'))['addendumamount_r__sum']
         result = self.contractamount_r + (addendumamount_r_sum or 0)
         return f"{result:,}"
 
     def extraWorkPrice_fc(self):
+        """
+        Get the extra work price in Foreign Currency.
+        """
         addendumamount_fc_sum = Addendum.objects.filter(
             contractid__exact=self.contractid).aggregate(Sum('addendumamount_fc'))['addendumamount_fc__sum']
         result = (addendumamount_fc_sum or 0)
         return f"{result:,}"
 
     def totalprice_fc(self):
+        """
+        Get the total price in Foreign Currency.
+        """
         addendumamount_fc_sum = Addendum.objects.filter(
             contractid__exact=self.contractid).aggregate(Sum('addendumamount_fc'))['addendumamount_fc__sum']
         result = self.contractamount_fc + (addendumamount_fc_sum or 0)
         return f"{result:,}"
         
     def projectManager(self):
+        """
+        Get the project manager.
+        """
         # personal = Personel.objects.get(pk=self.projectmanagerid)
         #  self.projectmanagerid.__str__()
         return '%s %s' % (self.projectmanagerid.first_name, self.projectmanagerid.last_name) if self.projectmanagerid is not None else ''
     
     def projectManagerImage(self):
+        """
+        Get the project manager image.
+        """
         # image_url = (self.projectmanagerid.user_img.url or "")
         # return mark_safe(f'<img src = "{image_url}" width = "120", alt="img"/>')
         user = get_user_model().objects.get(pk=self.projectmanagerid.id)
@@ -203,26 +271,47 @@ class Contract(models.Model):
             return None
     
     def customer(self):
+        """
+        Get the customer.
+        """
         # customer = Company.objects.get(pk=self.customerid)
         return self.customerid.company if self.customerid is not None else ''
     
     def currency(self):
+        """
+        Get the currency.
+        """
         # currency = Currency.objects.get(pk=self.currencyid)
         return self.currencyid.currency if self.currencyid is not None else ''
     
     def startOperationShamsiDate(self):
+        """
+        Get the start operation date in Shamsi.
+        """
         return GregorianToShamsi(self.startoperationdate) if self.startoperationdate is not None else ''           
 
     def notificationShamsiDate(self):
+        """
+        Get the notification date in Shamsi.
+        """
         return GregorianToShamsi(self.notificationdate) if self.notificationdate is not None else ''
     
     def finishShamsiDate(self):
+        """
+        Get the finish date in Shamsi.
+        """
         return GregorianToShamsi(self.finishdate) if self.finishdate is not None else ''
 
     def planStartShamsiDate(self):
+        """
+        Get the plan start date in Shamsi.
+        """
         return GregorianToShamsi(self.planstartdate) if self.planstartdate is not None else ''
     
     def passedDuration(self):
+        """
+        Get the passed duration in months.
+        """
         if not self.iscompleted and self.startdate is not None:
             date_format = "%Y-%m-%d"
             now = datetime.strptime(str(datetime.now().date()), date_format)
@@ -233,18 +322,32 @@ class Contract(models.Model):
             # diff = relativedelta.relativedelta(now, startdate)
             # return diff.months + diff.years * 12
         else:
+            last_addendum_date = Addendum.objects.filter(contractid__exact=self.contractid).alast()["afteraddendumdate"]
+            if last_addendum_date is not None:
+                date_format = "%Y-%m-%d"
+                now = datetime.strptime(str(datetime.now().date()), date_format)
+                last_addendum_date = datetime.strptime(str(last_addendum_date), date_format)
+                months = (now.year - last_addendum_date.year) * 12 + (now.month - last_addendum_date.month)
+                return months
             return self.duration 
 
     def approximateFinishShamsiDate(self):
+        """
+        Get the approximate finish date in Shamsi.
+        """
         afteraddendumdate_max = Addendum.objects.filter(
             contractid__exact=self.contractid).aggregate(Max('afteraddendumdate'))['afteraddendumdate__max']
-        
+
         if afteraddendumdate_max is None:
             return GregorianToShamsi(self.finishdate) if self.finishdate is not None else ''
         else:
             return GregorianToShamsi(afteraddendumdate_max)
+       
 
     def addendumDuration(self):
+        """
+        Get the addendum duration in months.
+        """
         afteraddendumdate_max = Addendum.objects.filter(
             contractid__exact=self.contractid).aggregate(Max('afteraddendumdate'))['afteraddendumdate__max']
         
@@ -258,9 +361,15 @@ class Contract(models.Model):
         return months
     
     def __str__(self) -> str:
-        return self.contract
+        """
+        Get the string representation of the Contract model.
+        """
+        return self.contract if self.contract is not None else ''
     
     def roles(self):
+        """
+        Get the roles for the contract.
+        """
         roles = Contract.objects.filter(Contract_UserRole__contractid__exact=self.contractid).values(
             'Contract_UserRole__roleid__role').annotate(
                 role = F('Contract_UserRole__roleid__role')).values('role')
@@ -268,6 +377,9 @@ class Contract(models.Model):
         return roles
 
     def contracttype(self):
+        """
+        Get the contract type.
+        """
         return self.contracttypeid.contracttype if self.contracttypeid is not None else ''
         
     class Meta:
@@ -277,6 +389,9 @@ class Contract(models.Model):
 
 
 class ContractUser(models.Model):
+    """
+    Contract user model for the contracts application.
+    """
     contractuserid = models.AutoField(db_column='ContractUserID', primary_key=True)  
     contractid = models.ForeignKey(Contract, models.DO_NOTHING, db_column='ContractID')  
     userid = models.ForeignKey(settings.AUTH_USER_MODEL, models.DO_NOTHING, db_column='UserID')  
@@ -289,6 +404,9 @@ class ContractUser(models.Model):
 
 
 class EpcCorporation(models.Model):
+    """
+    Epc corporation model for the contracts application.
+    """
     contractcorporationid = models.AutoField(db_column='ContractCorporationID', primary_key=True)  
     contractid = models.ForeignKey(Contract, related_name="Contract_Corporation", on_delete=models.CASCADE, db_column='ContractID')  
     companyid = models.ForeignKey(Company, related_name="Company_Corporation", on_delete=models.CASCADE, db_column='CompanyID')  
@@ -297,27 +415,42 @@ class EpcCorporation(models.Model):
     c_percent = models.FloatField(db_column='C_Percent')  
     
     def __str__(self) -> str:
+        """
+        Get the string representation of the EpcCorporation model.
+        """
         return '%s: e=%s, p=%s, c=%s' % (self.companyid.company, self.e_percent, self.p_percent, self.c_percent)
    
     def E(self):
+        """
+        Get the E for the contract.
+        """
         e = EpcCorporation.objects.filter(contractid__exact=self.contractid, e_percent__gt=0).values(
             'companyid__company', 'e_percent').annotate( value = F('e_percent'), 
                                                         name = F('companyid__company')).values('value', 'name')  
         return (e)
     
     def P(self):
+        """
+        Get the P for the contract.
+        """
         p = EpcCorporation.objects.filter(contractid__exact=self.contractid, p_percent__gt=0).values(
             'companyid__company', 'p_percent').annotate( value = F('p_percent'), 
                                                         name = F('companyid__company')).values('value', 'name')  
         return (p)
 
     def C(self):
+        """
+        Get the C for the contract.
+        """
         c = EpcCorporation.objects.filter(contractid__exact=self.contractid, c_percent__gt=0).values(
             'companyid__company', 'c_percent').annotate( value = F('c_percent'), 
                                                         name = F('companyid__company')).values('value', 'name')  
         return (c)
         
     def company(self):
+        """
+        Get the company for the contract.
+        """
         return self.companyid.company
     
     class Meta:
@@ -327,6 +460,9 @@ class EpcCorporation(models.Model):
 
 # date.today()
 class Addendum(models.Model):
+    """
+    Addendum model for the contracts application.
+    """
     addendumid = models.AutoField(db_column='AddendumID', primary_key=True)  
     contractid = models.ForeignKey(Contract,related_name="Contract_Addendum", on_delete=models.PROTECT, db_column='ContractID')  
     addendumamount_r = models.BigIntegerField(db_column='AddendumAmount_R', null=True)  
@@ -335,6 +471,9 @@ class Addendum(models.Model):
     afteraddendumdate = models.DateField(db_column='AfterAddendumDate', null=True)  
 
     def afteraddendumshamsidate(self):
+        """
+        Get the after addendum date in Shamsi.
+        """
         return GregorianToShamsi(self.afteraddendumdate) if self.afteraddendumdate is not None else ''
 
     class Meta:
@@ -344,6 +483,9 @@ class Addendum(models.Model):
 
 
 class ContractCurrencies(models.Model):
+    """
+    Contract currencies model for the contracts application.
+    """
     contractcurrencyid = models.AutoField(db_column='ContractCurrencyID', primary_key=True)  
     contractid = models.ForeignKey(Contract, models.DO_NOTHING, db_column='ContractID')  
     currencyid = models.IntegerField(db_column='CurrencyID')  
@@ -357,11 +499,17 @@ class ContractCurrencies(models.Model):
 
 
 class ContractConsultant(models.Model):
+    """
+    Contract consultant model for the contracts application.
+    """
     contractconsultantid = models.AutoField(db_column='ContractConsultantID', primary_key=True)  
     contractid = models.ForeignKey(Contract, models.DO_NOTHING, db_column='ContractID')  
     consultantid = models.ForeignKey(Company, models.DO_NOTHING, db_column='ConsultantID')  
 
     def consultant(self):
+        """
+        Get the consultant for the contract.
+        """
         try:
             return (self.consultantid.company if self.consultantid.company is not None else '') if self.consultantid is not None else ''
         except:
@@ -375,6 +523,9 @@ class ContractConsultant(models.Model):
  
 
 class ContractContractor(models.Model):
+    """
+    Contract contractor model for the contracts application.
+    """
     contractcontractorid = models.AutoField(db_column='ContractContractorID', primary_key=True)  
     contractid = models.IntegerField(db_column='ContractID')  
     contractorid =models.IntegerField(db_column='ContractorID')  
@@ -384,6 +535,9 @@ class ContractContractor(models.Model):
 
 
 class DateConversion(models.Model):
+    """
+    Date conversion model for the contracts application.
+    """
     shamsidate = models.CharField(db_column='ShamsiDate', primary_key=True, max_length=10, db_collation='SQL_Latin1_General_CP1_CI_AS')  
     georgiandate = models.CharField(db_column='GeorgianDate', max_length=10, db_collation='SQL_Latin1_General_CP1_CI_AS')  
     tmonth = models.CharField(db_column='tMonth', max_length=2, db_collation='SQL_Latin1_General_CP1_CI_AS')  
@@ -396,6 +550,9 @@ class DateConversion(models.Model):
 
 
 class FinancialDocuments(models.Model):
+    """
+    Financial documents model for the contracts application.
+    """
     documentid = models.IntegerField(db_column='DocumentID', primary_key=True)  
     documentno = models.IntegerField(db_column='DocumentNo')  
     doctype = models.CharField(db_column='DocType', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  

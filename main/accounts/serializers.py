@@ -1,86 +1,132 @@
+"""data
+data
+data
+data
+Serializers for the accounts application.
+
+This module contains the serializers for the accounts application.
+"""
+import logging
 from rest_framework import serializers
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 
 from django.contrib.auth.models import Group, Permission
 
-from accounts.models import *
+from accounts.models import User, UserRole
 
 
 #=========== Authorization Serializers ============
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the User model.
+    """
     full_name = serializers.ReadOnlyField()
     class Meta:
         model = get_user_model()
         fields = ('id', 'username', 'email', 'full_name', 'user_img')
 
 class UserExSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the User model.
+    """
     class Meta:
         model = get_user_model()
         fields = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active')
 
 class GroupSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Group model.
+    """
     class Meta:
         model = Group
         fields = ('id', 'name')
 
 class PermissionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Permission model.
+    """
     class Meta:
         model = Permission
         fields = ('id', 'name')
-                
+
 class UserGroupSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the UserGroup model.
+    """
     groups = serializers.PrimaryKeyRelatedField(many=True, queryset=Group.objects.all())
-    
-    class Meta:
-        model = get_user_model()    
-        fields = ['id', 'groups']
-        
-class UserGroupsExSerializer(serializers.ModelSerializer):
-    groups = GroupSerializer(many=True)
-    # serializers.PrimaryKeyRelatedField(many=True, queryset=Group.objects.all())
-    
+
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'first_name', 'last_name', 'groups') 
+        fields = ['id', 'groups']
+
+class UserGroupsExSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the UserGroupsEx model.
+    """
+    groups = GroupSerializer(many=True)
+    # serializers.PrimaryKeyRelatedField(many=True, queryset=Group.objects.all())
+
+    class Meta:
+        model = get_user_model()
+        fields = ('id', 'username', 'first_name', 'last_name', 'groups')
 
 class GroupPermissionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the GroupPermission model.
+    """
     permissions = serializers.PrimaryKeyRelatedField(many=True, queryset=Permission.objects.all())
-    
+
     class Meta:
-        model = Group    
+        model = Group
         fields = ['id', 'permissions']
 
 class GroupPermissionsExSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the GroupPermissionsEx model.
+    """
     permissions = PermissionSerializer(many=True)
-    
+
     class Meta:
         model = Group
         fields = ('id', 'name', 'permissions')
-        
+
 class UserPermissionSerializer(serializers.ModelSerializer):
-    user_permissions = serializers.PrimaryKeyRelatedField(many=True, queryset=Permission.objects.all())
-    
+    """
+    Serializer for the UserPermission model.
+    """
+    user_permissions = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Permission.objects.all())
+
     class Meta:
-        model = get_user_model()    
+        model = get_user_model()
         fields = ['id', 'user_permissions']
 
 class UserPermissionsExSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the UserPermissionsEx model.
+    """
     user_permissions = PermissionSerializer(many=True)
-    
+
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'first_name', 'last_name', 'user_permissions')    
-        
+        fields = ('id', 'username', 'first_name', 'last_name', 'user_permissions')
+
 class UserContractPermissionsSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the UserContractPermissions model.
+    """
     permissions = serializers.ReadOnlyField()
     board = serializers.ReadOnlyField()
     admin = serializers.ReadOnlyField()
-    
+
     class Meta:
         model = UserRole
         fields = ['userid', 'projectid', 'board', 'admin', 'permissions']
-        
+
 class ProjectConfirmersSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ProjectConfirmers model.
+    """
     project_manager = serializers.ReadOnlyField()
     financialInfo_confirmor = serializers.ReadOnlyField()
     hse_confirmor = serializers.ReadOnlyField()
@@ -94,23 +140,26 @@ class ProjectConfirmersSerializers(serializers.ModelSerializer):
     machinary_confirmor = serializers.ReadOnlyField()
     projectPersonel_confirmor = serializers.ReadOnlyField()
     problem_confirmor = serializers.ReadOnlyField()
-    criticalAction_confirmor = serializers.ReadOnlyField()  
+    criticalAction_confirmor = serializers.ReadOnlyField()
     projectDox_confirmor = serializers.ReadOnlyField()
     periodicDox_confirmor = serializers.ReadOnlyField()
     zoneImage_confirmor = serializers.ReadOnlyField()
-    
+
     class Meta:
         model = UserRole
-        fields = ['project_manager', 'financialInfo_confirmor', 'hse_confirmor', 'progressState_confirmor', 
-                  'timeProgressState_confirmor', 'invoice_confirmor', 'financialInvoice_confirmor', 
-                  'workVolume_confirmor', 'pmsProgress_confirmor', 'budget_confirmor', 'machinary_confirmor', 
+        fields = ['project_manager', 'financialInfo_confirmor', 'hse_confirmor',
+                  'progressState_confirmor','timeProgressState_confirmor', 'invoice_confirmor',  
+                  'financialInvoice_confirmor','workVolume_confirmor', 'pmsProgress_confirmor',     
                   'projectPersonel_confirmor', 'problem_confirmor', 'criticalAction_confirmor', 
-                  'projectDox_confirmor', 'periodicDox_confirmor', 'zoneImage_confirmor']  
-    
-    
-    
+                  'budget_confirmor', 'machinary_confirmor', 'projectDox_confirmor',
+                  'periodicDox_confirmor', 'zoneImage_confirmor']  
+
+
 #=========== Authentication Serializers ============
 class RegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Register model.
+    """
     class Meta:
         model = get_user_model()
         fields = ('id', 'username', 'email', 'password')
@@ -123,36 +172,86 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for the Login model.
+    """
     username = serializers.CharField()
     password = serializers.CharField()
 
-    def validate(self, data):
-        user = authenticate(**data)
-        if user and user.is_active:
-            return user
-        raise serializers.ValidationError("Have Incorrect Credentials")
+    def validate(self, attrs):
+        """
+        Validate the login attrs.
+        """
+        logger = logging.getLogger(__name__)
+
+        # Get the request from the context
+        # request = self.context.get('request')
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        # First, check if user exists
+        user_1 = get_user_model()
+        try:
+            user = user_1.objects.get(username=username)
+            print(f"User found: {user.username}, is_active: {user.is_active}")
+            logger.info(lambda: f"User found: %{username}, is_active: {user.is_active}")
+
+            # Debug: Check password
+            password_valid = user.check_password(password)
+            logger.info(lambda: f"Password check result: {password_valid}")
+
+            if password_valid and user.is_active:
+                print("Password matches!")
+                return user
+
+            if not password_valid:
+                raise serializers.ValidationError("Incorrect password")
+
+            print("Password does not match!")
+            raise serializers.ValidationError("User account is disabled")
+
+        except User.DoesNotExist as e:
+            print("User does not exist!")
+            logger.error(lambda: f"User not found: {username}")
+            raise serializers.ValidationError("User not found") from e
+
+    def create(self, validated_data):
+        # Since this is only for validation, return None or the user
+        return validated_data.get('user')
+
+    def update(self, instance, validated_data):
+        # Not used for login
+        return instance
+
 
 class PasswordSerializer(serializers.Serializer):
+    """
+    Serializer for the Password model.
+    """
     userid = serializers.IntegerField()
     username = serializers.CharField()
     currentpassword = serializers.CharField()
     newpassword = serializers.CharField()
 
     def create(self, validated_data):
-        pass
+        """
+        Create a new password.
+        """
 
     def update(self, instance, validated_data):
-        pass
+        """
+        Update a password.
+        """
         # instance.userid = validated_data.get('userid', instance.userid)
         # instance.password = validated_data.get('hashedNewPassword', instance.password)
         # instance.save()
         # return instance
 
-    def validate(self, data):
+    def validate(self, attrs):
         """ check that userid and new password are different """
-        if data["username"] == data["newpassword"]:
+        if attrs["username"] == attrs["newpassword"]:
             raise serializers.ValidationError("username and new password should be different")
-        return data
+        return attrs
 
     def validate_password(self, value):
         """
@@ -182,5 +281,3 @@ class PasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("It should have at least one special character")
 
         return value
-
-

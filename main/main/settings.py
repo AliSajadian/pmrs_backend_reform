@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+# from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -46,14 +47,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'knox',
     'rest_framework',
     # 'rest_framework.authtoken',
     # 'rest_auth',
     'django_extensions',
     'corsheaders',
-    
+
     'accounts',
     'contracts',
     'projects',
@@ -66,7 +67,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (  #
         'knox.auth.TokenAuthentication',
     ),
+
     'DATETIME_FORMAT': "%m/%d/%Y %H:%M:%S",
+
+    'EXCEPTION_HANDLER': 'main.exceptions.custom_exception_handler',
 }
 
 MIDDLEWARE = [
@@ -114,9 +118,9 @@ STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
-    # "staticfiles": {
-    #     "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    # },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
 }
 
 TEMPLATES = [
@@ -145,14 +149,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'DbPmrs',
-        'HOST': 'localhost',
         'USER': 'sa',
-        'PASSWORD': 'aSj#14776$10036%mM&',
-
+        'PASSWORD': 'aSj#147760036%mM&',
+        'HOST': '127.0.0.1',  # Use 127.0.0.1 instead of localhost
+        'PORT': '1434',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
-        }
-    }  
+            'host_is_server': True,
+            'extra_params': 'TrustServerCertificate=yes;',
+        },
+    }
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / 'db.sqlite3',
@@ -214,7 +220,45 @@ MEDIA_URL = '/assets/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'assets')
 # MEDIA_ROOT = BASE_DIR / 'assets'
 
+# Make sure to serve media files in production
+if DEBUG is False:  # In production
+    # Add media URL to your main urls.py
+    pass
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'main': {  # or 'your_app'
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

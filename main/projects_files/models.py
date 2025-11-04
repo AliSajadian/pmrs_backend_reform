@@ -1,3 +1,6 @@
+"""
+Models for the projects_files application.
+"""
 import datetime
 import os
 import django
@@ -20,6 +23,9 @@ from projects.models import ReportDate
 hse_fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs_Files\Hse_Reports")
 
 class HseReportDox(models.Model):
+    """
+    Hse report dox model for the projects_files application.
+    """
     hsereportdoxid = models.AutoField(db_column='HseReportDoxID', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_HseReportDox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -31,12 +37,21 @@ class HseReportDox(models.Model):
     active = models.BooleanField(db_column='Active', blank=True, null=True)  # Field name made lowercase.
 
     def year(self):
+        """
+        Get the year for the Hse report dox.
+        """
         return self.dateid.year
 
     def month(self):
+        """
+        Get the month for the Hse report dox.
+        """
         return self.dateid.month
     
     def filename(self):
+        """
+        Get the filename for the Hse report dox.
+        """
         if self.file:
             return self.file.name.split('/')[-1:][0]
         return ''
@@ -60,6 +75,9 @@ class HseReportDox(models.Model):
 
 @receiver(pre_delete, sender=HseReportDox)
 def hseReport_file_pre_delete(sender, instance, *args, **kwargs):
+    """
+    Deletes image files on `post_delete` for the Hse report dox.
+    """
     # Deletes image files on `post_delete`
     if instance.file:
         storage, path = instance.file.storage, instance.file.path
@@ -73,6 +91,9 @@ def hseReport_file_pre_delete(sender, instance, *args, **kwargs):
 projectDox_fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs_Files\Project Contract")
 
 class ProjectDox(models.Model):
+    """
+    Project dox model for the projects_files application.
+    """
     projectdoxid = models.AutoField(db_column='ProjectDoxID', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_ProjectDox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -86,6 +107,9 @@ class ProjectDox(models.Model):
     active = models.BooleanField(db_column='Active', blank=True, null=True)  # Field name made lowercase.
 
     def filename(self):
+        """
+        Get the filename for the ProjectDox model.
+        """
         if self.file:
             return self.file.name.split('/')[-1:][0]
         return ''
@@ -109,6 +133,9 @@ class ProjectDox(models.Model):
 
 @receiver(pre_delete, sender=ProjectDox)
 def projectDox_file_pre_delete(sender, instance, *args, **kwargs):
+    """ 
+    Deletes image files on `post_delete` for the ProjectDox model.
+    """
     # Deletes image files on `post_delete`
     if instance.file:
         storage, path = instance.file.storage, instance.file.path
@@ -122,6 +149,9 @@ def projectDox_file_pre_delete(sender, instance, *args, **kwargs):
 contractorDox_fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs_Files\Project Sub Contracts")
 
 class ContractDox(models.Model):
+    """
+    Contract dox model for the projects_files application.
+    """
     contractdoxid = models.AutoField(db_column='ContractDoxID', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_ContractDox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -134,6 +164,9 @@ class ContractDox(models.Model):
     file = models.FileField(db_column='File', storage=contractorDox_fs, null=True, unique=True)
 
     def filename(self):
+        """
+        Get the filename for the ContractDox model.
+        """
         if self.file:
             return self.file.name.split('/')[-1:][0]
         return ''
@@ -157,6 +190,9 @@ class ContractDox(models.Model):
 
 @receiver(pre_delete, sender=ContractDox)
 def contractDox_file_pre_delete(sender, instance, *args, **kwargs):
+    """
+    Deletes image files on `post_delete` for the ContractDox model.
+    """
     # Deletes image files on `post_delete`
     if instance.file:
         storage, path = instance.file.storage, instance.file.path
@@ -165,6 +201,9 @@ def contractDox_file_pre_delete(sender, instance, *args, **kwargs):
 
 
 class ContractorDox(models.Model):
+    """
+    Contractor dox model for the projects_files application.
+    """
     contractordoxid = models.AutoField(db_column='ContractorDoxId', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_ContractorDox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -176,9 +215,15 @@ class ContractorDox(models.Model):
     file = models.FileField(db_column='File', storage=contractorDox_fs, max_length=250, null=True, unique=True)
 
     def contractshamsidate(self):
+        """
+        Get the contract shamsi date for the ContractorDox model.
+        """
         return GregorianToShamsi(self.contractdate) if self.contractdate is not None else ''
 
     def filename(self):
+        """
+        Get the filename for the ContractorDox model.
+        """
         if self.file:
             return self.file.name.split('/')[-1:][0]
         return ''
@@ -202,6 +247,9 @@ class ContractorDox(models.Model):
                     
 @receiver(pre_delete, sender=ContractorDox)
 def contractorDox_file_pre_delete(sender, instance, *args, **kwargs):
+    """
+    Deletes image files on `post_delete` for the ContractorDox model.
+    """
     # Deletes image files on `post_delete`
     if instance.file:
         storage, path = instance.file.storage, instance.file.path
@@ -215,6 +263,9 @@ def contractorDox_file_pre_delete(sender, instance, *args, **kwargs):
 projectMonthlyDox_fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs_Files\Project Monthly Reports")
 
 class ProjectMonthlyDox(models.Model):
+    """
+    Project monthly dox model for the projects_files application.
+    """
     projectmonthlydoxid = models.AutoField(db_column='ProjectMonthlyDoxId', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_ProjectMonthlyDox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -225,12 +276,21 @@ class ProjectMonthlyDox(models.Model):
     active = models.BooleanField(db_column='Active', blank=True, null=True)  # Field name made lowercase.
 
     def year(self):
+        """
+        Get the year for the ProjectMonthlyDox model.
+        """
         return self.dateid.year
 
     def month(self):
+        """
+        Get the month for the ProjectMonthlyDox model.
+        """
         return self.dateid.month
 
     def filename(self):
+        """
+        Get the filename for the ProjectMonthlyDox model.
+        """
         if self.file:
             return self.file.name.split('/')[-1:][0]
         return ''
@@ -254,6 +314,9 @@ class ProjectMonthlyDox(models.Model):
 
 @receiver(pre_delete, sender=ProjectMonthlyDox)
 def projectMonthlyDox_file_pre_delete(sender, instance, *args, **kwargs):
+    """
+    Deletes image files on `post_delete` for the ProjectMonthlyDox model.
+    """
     # Deletes image files on `post_delete`
     if instance.file:
         storage, path = instance.file.storage, instance.file.path
@@ -267,6 +330,9 @@ def projectMonthlyDox_file_pre_delete(sender, instance, *args, **kwargs):
 invoiceDox_fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs_Files\Approved Invoices")
 
 class InvoiceDox(models.Model):
+    """
+    Invoice dox model for the projects_files application.
+    """
     invoicedoxid = models.AutoField(db_column='InvoiceDoxID', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_Invoicedox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -287,15 +353,27 @@ class InvoiceDox(models.Model):
     active = models.BooleanField(db_column='Active')  # Field name made lowercase.
 
     def invoiceshamsidate(self):
+        """
+        Get the invoice shamsi date for the InvoiceDox model.
+        """
         return GregorianToShamsi(self.invoicedate) if self.invoicedate is not None else ''
 
     def sendshamsidate(self):
+        """
+        Get the send date for the InvoiceDox model.
+        """
         return GregorianToShamsi(self.senddate) if self.senddate is not None else ''
 
     def confirmshamsidate(self):
+        """
+        Get the confirm date for the InvoiceDox model.
+        """
         return GregorianToShamsi(self.confirmdate) if self.confirmdate is not None else ''
 
     def filename(self):
+        """
+        Get the filename for the InvoiceDox model.
+        """
         if self.file:
             return self.file.name.split('/')[-1:][0]
         return ''
@@ -319,6 +397,9 @@ class InvoiceDox(models.Model):
 
 @receiver(pre_delete, sender=InvoiceDox)
 def invoiceDox_file_pre_delete(sender, instance, *args, **kwargs):
+    """
+    Deletes image files on `post_delete` for the InvoiceDox model.
+    """
     # Deletes image files on `post_delete`
     if instance.file:
         storage, path = instance.file.storage, instance.file.path
@@ -327,6 +408,9 @@ def invoiceDox_file_pre_delete(sender, instance, *args, **kwargs):
 
 
 class ApprovedInvoiceDox(models.Model):
+    """
+    Approved invoice dox model for the projects_files application.
+    """
     approvedinvoicedoxid = models.AutoField(db_column='ApprovedInvoiceDoxId', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_ApprovedInvoiceDox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -346,15 +430,27 @@ class ApprovedInvoiceDox(models.Model):
     active = models.BooleanField(db_column='Active', blank=True, null=True)  # Field name made lowercase.
 
     def invoiceshamsidate(self):
+        """
+        Get the invoice shamsi date for the ApprovedInvoiceDox model.
+        """
         return GregorianToShamsi(self.invoicedate) if self.invoicedate is not None else ''
 
     def sendshamsidate(self):
+        """
+        Get the send date for the ApprovedInvoiceDox model.
+        """
         return GregorianToShamsi(self.senddate) if self.senddate is not None else ''
 
     def confirmshamsidate(self):
+        """
+        Get the confirm date for the ApprovedInvoiceDox model.
+        """
         return GregorianToShamsi(self.confirmdate) if self.confirmdate is not None else ''
 
     def filename(self):
+        """
+        Get the filename for the ApprovedInvoiceDox model.
+        """
         if self.file:
             return self.file.name.split('/')[-1:][0]
         return ''
@@ -378,6 +474,9 @@ class ApprovedInvoiceDox(models.Model):
 
 @receiver(pre_delete, sender=ApprovedInvoiceDox)
 def approvedInvoiceDox_file_pre_delete(sender, instance, *args, **kwargs):
+    """
+    Deletes image files on `post_delete` for the ApprovedInvoiceDox model.
+    """
     # Deletes image files on `post_delete`
     if instance.file:
         storage, path = instance.file.storage, instance.file.path
@@ -389,6 +488,9 @@ def approvedInvoiceDox_file_pre_delete(sender, instance, *args, **kwargs):
 #                ZONE MODEL
 # ========================================= 
 class Zone(models.Model):
+    """
+    Zone model for the projects_files application.
+    """
     zoneid = models.AutoField(db_column='ZoneID', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_Zone", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -403,7 +505,13 @@ class Zone(models.Model):
 # ========================================= 
 zoneImage_fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs_Files\Constructions Pix")
 class ProjectZoneImageQuerySet(models.query.QuerySet):
+    """
+    Project zone image query set for the projects_files application.
+    """
     def allProjectZonesImages(self, dateId):
+        """
+        Get all project zones images for the ProjectZoneImageQuerySet model.
+        """
         zoneImages1 = self.filter(dateid__lte=dateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
             contract=F('zoneid__contractid__contract'), 
@@ -438,6 +546,9 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
         return zoneImages1.union(zoneImages2).union(zoneImages3)   
 
     def allProjectZonesImagesEx(self, fromDateId, toDateId):
+        """
+        Get all project zones images for the ProjectZoneImageQuerySet model.
+        """
         zoneImages1 = self.filter(dateid__gte=fromDateId, dateid__lte=toDateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
             contract=F('zoneid__contractid__contract'), 
@@ -472,6 +583,9 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
         return zoneImages1.union(zoneImages2).union(zoneImages3)   
        
     def projectAllZonesImages(self, contractId):
+        """
+        Get all project zones images for the ProjectZoneImageQuerySet model.
+        """
         zoneImages1 = self.filter(zoneid__contractid__exact=contractId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
             contract=F('zoneid__contractid__contract'), 
@@ -506,6 +620,9 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
         return zoneImages1.union(zoneImages2).union(zoneImages3)   
     
     def selectedProjectAllZonesImages(self, contractsId, dateId):
+        """
+        Get all project zones images for the ProjectZoneImageQuerySet model.
+        """
         zoneImages1 = self.filter(zoneid__contractid__in=contractsId, dateid__lte=dateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
             contract=F('zoneid__contractid__contract'), 
@@ -540,6 +657,9 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
         return zoneImages1.union(zoneImages2).union(zoneImages3)   
     
     def selectedProjectAllZonesImagesEx(self, contractsId, fromDateId, toDateId):
+        """
+        Get all project zones images for the ProjectZoneImageQuerySet model.
+        """
         zoneImages1 = self.filter(zoneid__contractid__in=contractsId, dateid__gte=fromDateId, dateid__lte=toDateId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
             contract=F('zoneid__contractid__contract'), 
@@ -574,6 +694,9 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
         return zoneImages1.union(zoneImages2).union(zoneImages3)   
     
     def projectZoneImages(self, zoneId):
+        """
+        Get all project zones images for the ProjectZoneImageQuerySet model.
+        """
         zoneImages1 = self.filter(zoneid__exact=zoneId).values(
             'zoneid__contractid__contract', 'zoneid__zone', 'ppp', 'app', 'img1', 'description1').annotate(
             contract=F('zoneid__contractid__contract'), 
@@ -608,28 +731,56 @@ class ProjectZoneImageQuerySet(models.query.QuerySet):
         return zoneImages1.union(zoneImages2).union(zoneImages3)        
 
 class ProjectZoneImageManager(models.Manager):
+    """
+    Project zone image manager for the projects_files application.
+    """
     def get_queryset(self):
+        """
+        Get the queryset for the ProjectZoneImageManager model.
+        """
         return ProjectZoneImageQuerySet(self.model, using=self._db)
 
     def allProjectZonesImages(self, dateId):
+        """
+        Get all project zones images for the ProjectZoneImageManager model.
+        """
         return self.get_queryset().allProjectZonesImages(dateId)
 
     def allProjectZonesImagesEx(self, fromDateId, toDateId):
+        """
+        Get all project zones images for the ProjectZoneImageManager model.
+        """
         return self.get_queryset().allProjectZonesImagesEx(fromDateId, toDateId)
 
     def projectAllZonesImages(self, contractId):
+        """
+        Get all project zones images for the ProjectZoneImageManager model.
+        """
         return self.get_queryset().projectAllZonesImages(contractId)
 
     def selectedProjectAllZonesImages(self, contractsId, dateId):
+        """
+        Get all project zones images for the ProjectZoneImageManager model.
+        """
         return self.get_queryset().selectedProjectAllZonesImages(contractsId, dateId)
 
     def selectedProjectAllZonesImagesEx(self, contractsId, fromDateId, toDateId):
+        """
+        Get all project zones images for the ProjectZoneImageManager model.
+        """
         return self.get_queryset().selectedProjectAllZonesImagesEx(contractsId, fromDateId, toDateId)
 
     def projectZoneImages(self, zoneId):
+        """
+        Get all project zones images for the ProjectZoneImageManager model.
+        """
         return self.get_queryset().projectZoneImages(zoneId)        
 
+
 class ZoneImage(models.Model):
+    """
+    Zone image model for the projects_files application.
+    """
     zoneimageid = models.AutoField(db_column='ZoneImageID', primary_key=True)  # Field name made lowercase.
     zoneid = models.ForeignKey(Zone, related_name="Zone_Zoneimage", 
                                    on_delete=models.PROTECT, db_column='ZoneID')  # Field name made lowercase.
@@ -651,22 +802,37 @@ class ZoneImage(models.Model):
     projectZoneImages = ProjectZoneImageManager()
     
     def zone(self):
+        """
+        Get the zone for the ZoneImage model.
+        """
         return self.zoneid.zone
     
     def contract(self):
+        """
+        Get the contract for the ZoneImage model.
+        """
         return self.zoneid.contractid.contract
     
     def imagepath1(self):
+        """
+        Get the image path for the ZoneImage model.
+        """
         if self.img1: 
             return self.img1.name.split('/')[-1:][0]
         return ''
 
     def imagepath2(self):
+        """
+        Get the image path for the ZoneImage model.
+        """
         if self.img2:
             return self.img2.name.split('/')[-1:][0]
         return ''
     
     def imagepath3(self):
+        """
+        Get the image path for the ZoneImage model.
+        """
         if self.img3:
             return self.img3.name.split('/')[-1:][0]
         # 
@@ -674,6 +840,9 @@ class ZoneImage(models.Model):
     
     @property
     def explanation(self):
+        """
+        Get the explanation for the ZoneImage model.
+        """
         return 'پروژه: %s - سازه: %s -  درصد پیشرفت برنامه ای: %s - درصد پیشرفت واقعی: %s - %s'  % (
             self.zoneid.contractid.contract,self.zoneid.zone, self.ppp, self.app, self.description)
     
@@ -707,6 +876,9 @@ class ZoneImage(models.Model):
                                 
 @receiver(pre_delete, sender=ZoneImage)
 def zone_image_pre_delete(sender, instance, *args, **kwargs):
+    """
+    Deletes image files on `post_delete` for the ZoneImage model.
+    """
     # Deletes image files on `post_delete`
     if instance.img1:
         storage, path = instance.img1.storage, instance.img1.path
@@ -725,6 +897,9 @@ def zone_image_pre_delete(sender, instance, *args, **kwargs):
 #============================================================================
 fs = FileSystemStorage(location="D:/projects/cost_control/files/projectsDox/hseDox")
 def fileSystemStorage(instance, filename):
+    """
+    File system storage for the projects_files application.
+    """
     location="D:/projects/cost_control/files/projectsDox/hseDox"
     fullname = os.path.join(location, filename)
     if os.path.exists(fullname):
@@ -732,7 +907,11 @@ def fileSystemStorage(instance, filename):
     fs = FileSystemStorage(location="D:\projects\cost_control\Pmrs Files\Hse Reports")
     return fs
 
+
 class ReportDox(models.Model):
+    """
+    Report dox model for the projects_files application.
+    """
     reportdoxid = models.AutoField(db_column='ReportDoxID', primary_key=True)  # Field name made lowercase.
     contractid = models.ForeignKey(Contract, related_name="Contract_ReportDox", 
                                    on_delete=models.PROTECT, db_column='ContractID')  # Field name made lowercase.
@@ -753,6 +932,9 @@ class ReportDox(models.Model):
 
 @receiver(pre_save,  sender=ReportDox)
 def attachment_file_update(sender, **kwargs):
+    """
+    Attachment file update for the ReportDox model.
+    """
     reportDox = kwargs['instance']
     # As it was not yet saved, we get the instance from DB with 
     # the old file name to delete it. Which won't happen if it's a new instance
@@ -766,6 +948,9 @@ def attachment_file_update(sender, **kwargs):
 #            REPORT VISIT MODEL
 # ========================================= 
 class ReportVisit(models.Model):
+    """
+    Report visit model for the projects_files application.
+    """
     reportvisitid = models.AutoField(db_column='ReportVisitID', primary_key=True)  # Field name made lowercase.
     userid = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="reportVisits", 
                                    on_delete=models.PROTECT, db_column='UserID')  # Field name made lowercase.
@@ -794,6 +979,9 @@ class ReportVisit(models.Model):
     imagereport = models.BooleanField(default=False, db_column='ImageReport')  # Field name made lowercase.
 
     def manager(self):
+        """
+        Get the manager for the ReportVisit model.
+        """
         return '%s %s' % (self.userid.first_name, self.userid.last_name)     
 
     class Meta:
@@ -805,6 +993,9 @@ class ReportVisit(models.Model):
 #            REPORT VISIT DATE MODEL
 # ========================================= 
 class ReportVisitdate(models.Model):
+    """
+    Report visit date model for the projects_files application.
+    """
     visitreportdateid = models.AutoField(db_column='VisitReportDateID', primary_key=True)  # Field name made lowercase.
     visitreportid = models.ForeignKey(ReportVisit, related_name="ReportVisitdates", 
                                    on_delete=models.PROTECT, db_column='VisitReportID')  # Field name made lowercase.

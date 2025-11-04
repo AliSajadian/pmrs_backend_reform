@@ -1,9 +1,15 @@
+"""
+Serializers for the projects_files application.
+"""
 from rest_framework import serializers
 
 from projects_files.models import *
 
 
 class HseReportDoxSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the HseReportDox model.
+    """
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
     filename = serializers.ReadOnlyField()
@@ -14,6 +20,9 @@ class HseReportDoxSerializers(serializers.ModelSerializer):
 
 
 class ProjectDoxSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ProjectDox model.
+    """
     filename = serializers.ReadOnlyField()
     
     class Meta:
@@ -22,6 +31,9 @@ class ProjectDoxSerializers(serializers.ModelSerializer):
 
 
 class ContractorDoxSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ContractorDox model.
+    """
     contractshamsidate = serializers.ReadOnlyField()
     filename = serializers.ReadOnlyField()
     
@@ -32,6 +44,9 @@ class ContractorDoxSerializers(serializers.ModelSerializer):
 
 
 class ProjectMonthlyDoxSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ProjectMonthlyDox model.
+    """
     year = serializers.ReadOnlyField()
     month = serializers.ReadOnlyField()
     filename = serializers.ReadOnlyField()
@@ -42,6 +57,9 @@ class ProjectMonthlyDoxSerializers(serializers.ModelSerializer):
 
 
 class ApprovedInvoiceDoxSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ApprovedInvoiceDox model.
+    """
     invoiceshamsidate = serializers.ReadOnlyField()
     sendshamsidate = serializers.ReadOnlyField()
     confirmshamsidate = serializers.ReadOnlyField()
@@ -55,24 +73,36 @@ class ApprovedInvoiceDoxSerializers(serializers.ModelSerializer):
 
 
 class ReportDoxSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ReportDox model.
+    """
     class Meta:
         model = ReportDox
         fields = '__all__'
         
 
 class ReportVisitSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ReportVisit model.
+    """
     class Meta:
         model = ReportVisit
         fields = '__all__'
 
 
 class ZoneSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the Zone model.
+    """
     class Meta:
         model = Zone
         fields = ('zoneid', 'zone')
 
 
 class ZoneImagesSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ZoneImages model.
+    """
     contract = serializers.ReadOnlyField
     zone = serializers.ReadOnlyField
     imagename1 = serializers.ReadOnlyField
@@ -86,6 +116,9 @@ class ZoneImagesSerializers(serializers.ModelSerializer):
        
 
 class ProjectZoneImagesSerializers(serializers.Serializer):
+    """
+    Serializer for the ProjectZoneImages model.
+    """
     contract = serializers.CharField()
     zone = serializers.CharField()
     ppp = serializers.CharField()
@@ -95,6 +128,9 @@ class ProjectZoneImagesSerializers(serializers.Serializer):
 
     
 class ReportZoneImagesSerializers1(serializers.ModelSerializer):
+    """
+    Serializer for the ReportZoneImages model.
+    """
     zone = serializers.ReadOnlyField
     explanation = serializers.ReadOnlyField
 
@@ -104,6 +140,9 @@ class ReportZoneImagesSerializers1(serializers.ModelSerializer):
         
         
 class ReportVisitSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the ReportVisit model.
+    """
     manager = serializers.ReadOnlyField
     class Meta:
         model = ReportVisit

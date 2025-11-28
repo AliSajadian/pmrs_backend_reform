@@ -49,3 +49,33 @@ INFO 2025-11-01 15:28:43,877 basehttp "GET /api/hses/contractMonthReportList/0/7
 INFO 2025-11-01 15:28:43,908 basehttp "GET /api/invoices/contractMonthReportList2/0/7137/ HTTP/1.1" 200 30
 ERROR 2025-11-01 15:28:43,962 log Internal Server Error: /api/budgetCosts/contractMonthReportList/0/7137/
 ERROR 2025-11-01 15:28:43,962 basehttp "GET /api/budgetCosts/contractMonthReportList/0/7137/ HTTP/1.1" 500 69
+INFO 2025-11-11 23:02:06,791 autoreload Watching for file changes with StatReloader
+INFO 2025-11-11 23:10:56,483 autoreload Watching for file changes with StatReloader
+INFO 2025-11-11 23:14:48,654 autoreload Watching for file changes with StatReloader
+INFO 2025-11-11 23:15:45,500 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-11 23:15:45,821 autoreload Watching for file changes with StatReloader
+INFO 2025-11-11 23:15:59,119 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-11 23:15:59,438 autoreload Watching for file changes with StatReloader
+INFO 2025-11-11 23:16:00,580 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-11 23:16:00,879 autoreload Watching for file changes with StatReloader
+INFO 2025-11-11 23:16:04,026 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-11 23:16:04,350 autoreload Watching for file changes with StatReloader
+INFO 2025-11-11 23:16:07,534 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-11 23:16:07,903 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:08:14,216 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:10:12,518 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:10:12,901 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:10:14,030 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:10:14,368 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:10:19,574 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:10:19,955 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:10:21,108 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:10:21,472 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:22:02,801 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:22:03,186 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:22:04,295 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:22:04,651 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:22:07,801 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:22:08,177 autoreload Watching for file changes with StatReloader
+INFO 2025-11-12 00:22:10,284 autoreload /home/ali/projects/cost_control/cost-control-backend/main/projects/models.py changed, reloading.
+INFO 2025-11-12 00:22:10,647 autoreload Watching for file changes with StatReloader

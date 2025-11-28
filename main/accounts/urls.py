@@ -1,30 +1,27 @@
 """
-URLs for the accounts application.
+URL patterns for JWT authentication endpoints.
 
-This module contains the URLs for the accounts application.
+This module defines the URL routes for the new JWT-based authentication system.
+These routes work alongside the existing Knox-based authentication.
 """
-from rest_framework import routers
-from django.urls import path, include
-from knox import views as knox_views
+from django.urls import path
 
-from .api import *
-       
-router = routers.DefaultRouter()
-router.register('api/auth/users', UserAPI, 'users')
-router.register('api/auth/groups', GroupAPI, 'groups')
-router.register('api/auth/usergroups', UserGroupsAPI, 'usergroups')
-router.register('api/auth/permissions', PermissionAPI, 'permissions')
-router.register('api/auth/grouppermissions', GroupPermissionsAPI, 'grouppermissions')
+from accounts.api import (
+    LoginAPIView,
+    LogoutAPIView,
+    TokenRefreshAPIView,
+    RegisterAPIView,
+    ChangePasswordAPIView,
+    UserProfileAPIView,
+)
 
 urlpatterns = [
-    path('api/auth', include('knox.urls')),
-    path('api/auth/loginEx', LoginExAPI.as_view()),
-    path('api/auth/login', LoginAPI.as_view()),
-    # path("api/auth/logout/", LogoutAPI.as_view(), name="user-logout"),
-    # path("api/auth/refresh/", CookieTokenRefreshAPI.as_view(), name="token-refresh"),
-    path("api/auth/changePassword", PasswordAPIView.as_view(), name="changePassword"),
-    path('api/contractConfirmers/<int:contractid>/', ProjectConfirmersAPI.as_view(), name='contractConfirmers'),
+    # Authentication endpoints
+    path('api/auth/login', LoginAPIView.as_view(), name='jwt-login'),
+    path('api/auth/logout', LogoutAPIView.as_view(), name='jwt-logout'),
+    path('api/auth/refresh', TokenRefreshAPIView.as_view(), name='jwt-refresh'),
+    path('api/auth/register', RegisterAPIView.as_view(), name='jwt-register'),
+    path('api/auth/changePassword', ChangePasswordAPIView.as_view(), name='jwt-change-password'),
+    path('api/auth/profile', UserProfileAPIView.as_view(), name='jwt-profile'),
 ]
-
-urlpatterns += router.urls
 

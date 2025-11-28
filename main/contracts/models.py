@@ -12,7 +12,7 @@ from datetime import datetime
 # from django.contrib.auth import get_user_model
 from django.contrib.auth import get_user_model
 from accounts.models import *
-from .services import GregorianToShamsi
+from .services import gregorian_to_shamsi
 
 
 class CompanyType(models.Model):
@@ -288,25 +288,25 @@ class Contract(models.Model):
         """
         Get the start operation date in Shamsi.
         """
-        return GregorianToShamsi(self.startoperationdate) if self.startoperationdate is not None else ''           
+        return gregorian_to_shamsi(self.startoperationdate) if self.startoperationdate is not None else ''           
 
     def notificationShamsiDate(self):
         """
         Get the notification date in Shamsi.
         """
-        return GregorianToShamsi(self.notificationdate) if self.notificationdate is not None else ''
+        return gregorian_to_shamsi(self.notificationdate) if self.notificationdate is not None else ''
     
     def finishShamsiDate(self):
         """
         Get the finish date in Shamsi.
         """
-        return GregorianToShamsi(self.finishdate) if self.finishdate is not None else ''
+        return gregorian_to_shamsi(self.finishdate) if self.finishdate is not None else ''
 
     def planStartShamsiDate(self):
         """
         Get the plan start date in Shamsi.
         """
-        return GregorianToShamsi(self.planstartdate) if self.planstartdate is not None else ''
+        return gregorian_to_shamsi(self.planstartdate) if self.planstartdate is not None else ''
     
     def passedDuration(self):
         """
@@ -339,9 +339,9 @@ class Contract(models.Model):
             contractid__exact=self.contractid).aggregate(Max('afteraddendumdate'))['afteraddendumdate__max']
 
         if afteraddendumdate_max is None:
-            return GregorianToShamsi(self.finishdate) if self.finishdate is not None else ''
+            return gregorian_to_shamsi(self.finishdate) if self.finishdate is not None else ''
         else:
-            return GregorianToShamsi(afteraddendumdate_max)
+            return gregorian_to_shamsi(afteraddendumdate_max)
        
 
     def addendumDuration(self):
@@ -474,7 +474,7 @@ class Addendum(models.Model):
         """
         Get the after addendum date in Shamsi.
         """
-        return GregorianToShamsi(self.afteraddendumdate) if self.afteraddendumdate is not None else ''
+        return gregorian_to_shamsi(self.afteraddendumdate) if self.afteraddendumdate is not None else ''
 
     class Meta:
         db_table = 'tbl_Addendum'

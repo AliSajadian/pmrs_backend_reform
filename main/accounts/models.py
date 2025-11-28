@@ -76,7 +76,7 @@ class PmrsUser(AbstractUser):
         default='user_images/asft.png',
         null=True,
         blank=True)
-    # Field name made lowercase.
+
     priority = models.SmallIntegerField(db_column='Priority', default=0)
 
     objects = PmrsUserManager()
@@ -88,35 +88,37 @@ class PmrsUser(AbstractUser):
         """
         Get the image preview for the user.
         """
-        if(self.user_img and self.user_img.url and hasattr(self.user_img, 'url')):
+        if self.user_img and hasattr(self.user_img, 'url'):
             image_url = self.user_img.url
             return mark_safe(f'<img src = "{image_url}" width = "120", alt="img"/>')
-        else:
-            return mark_safe('<img src = "/assets/user_images/asft.png" width = "120", alt="img"/>')
+
+        return mark_safe('<img src = "/assets/user_images/asft.png" width = "120", alt="img"/>')
 
     def __str__(self) -> str:
-        return self.username if self.username else ""
+        return str(self.username) if self.username else ""
 
     def full_name(self):
         """
         Get the full name of the user.
         """
-        return '%s %s' % (self.first_name, self.last_name)
-    
-    
+        return f"{self.first_name}, {self.last_name}"
+
+
 class User(models.Model):
     """
     User model for the accounts application.
     """
-    userid = models.IntegerField(db_column='UserID', primary_key=True)  # Field name made lowercase.
-    user = models.CharField(db_column='User', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
-    passphrase = models.CharField(db_column='PassPhrase', max_length=100, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
-    active = models.BooleanField(db_column='Active')  # Field name made lowercase.
-    priority = models.SmallIntegerField(db_column='Priority')  # Field name made lowercase.
+    userid = models.IntegerField(db_column='UserID', primary_key=True)
+    user = models.CharField(db_column='User', unique=True, max_length=50,
+            db_collation='SQL_Latin1_General_CP1_CI_AS')
+    passphrase = models.CharField(db_column='PassPhrase', max_length=100,
+            db_collation='SQL_Latin1_General_CP1_CI_AS')
+    active = models.BooleanField(db_column='Active')
+    priority = models.SmallIntegerField(db_column='Priority')
 
     def __str__(self) -> str:
-        return self.user
-    
+        return str(self.user) if self.user else ""
+
     class Meta:
         db_table = 'tbl_User'
         verbose_name = 'User'
@@ -127,44 +129,48 @@ class Userlogin(models.Model):
     """
     User login model for the accounts application.
     """
-    loginid = models.AutoField(db_column='LoginID', primary_key=True)  # Field name made lowercase.
-    userid = models.IntegerField(db_column='UserID')  # Field name made lowercase.
-    enterdate = models.DateTimeField(db_column='EnterDate')  # Field name made lowercase.
-    exitdate = models.DateTimeField(db_column='ExitDate', blank=True, null=True)  # Field name made lowercase.
+    loginid = models.AutoField(db_column='LoginID', primary_key=True)
+    userid = models.IntegerField(db_column='UserID')
+    enterdate = models.DateTimeField(db_column='EnterDate')
+    exitdate = models.DateTimeField(db_column='ExitDate', blank=True, null=True)
 
     class Meta:
         db_table = 'tbl_UserLogin'
-        
+
 
 class Role(models.Model):
     """
     Role model for the accounts application.
     """
-    roleid = models.AutoField(db_column='RoleID', primary_key=True)  # Field name made lowercase.
+    roleid = models.AutoField(db_column='RoleID', primary_key=True)
     user = models.ManyToManyField(settings.AUTH_USER_MODEL, through='UserRole')
-    role = models.CharField(db_column='Role', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
-    description = models.CharField(db_column='Description', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    role = models.CharField(db_column='Role', unique=True, max_length=50,
+            db_collation='SQL_Latin1_General_CP1_CI_AS')
+    description = models.CharField(db_column='Description', max_length=50,
+            db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.role if self.role else ""
-    
+        return str(self.role) if self.role else ""
+
     class Meta:
         db_table = 'tbl_Role'
         verbose_name = 'Role'
         verbose_name_plural = 'Roles'
-   
-        
+
+
 class Permission(models.Model):
     """
     Permission model for the accounts application.
     """
-    permissionid = models.AutoField(db_column='PermissionID', primary_key=True)  # Field name made lowercase.
+    permissionid = models.AutoField(db_column='PermissionID', primary_key=True)
     role = models.ManyToManyField(Role, through='RolePermission')
-    permission = models.CharField(db_column='Permission', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
-    description = models.CharField(db_column='Description', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    permission = models.CharField(db_column='Permission', unique=True,
+            max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    description = models.CharField(db_column='Description', max_length=50,
+            db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.permission if self.permission else ""
+        return str(self.permission) if self.permission else ""
 
     class Meta:
         db_table = 'tbl_Permission'
@@ -176,249 +182,259 @@ class UserRole(models.Model):
     """
     User role model for the accounts application.
     """
-    userroleid = models.AutoField(db_column='UserRoleID', primary_key=True)  # Field name made lowercase.
-    userid = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="User_UserRole", on_delete=models.PROTECT, db_column='UserID')  # Field name made lowercase.
-    projectid = models.ForeignKey(Contract, related_name="Contract_UserRole", on_delete=models.PROTECT, blank=True, null=True, db_column='ContractID')  # Field name made lowercase.
-    roleid = models.ForeignKey(Role, related_name="Role_UserRole", on_delete=models.PROTECT, db_column='RoleID')  # Field name made lowercase.
+    userroleid = models.AutoField(db_column='UserRoleID', primary_key=True)
+    userid = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="User_UserRole",
+            on_delete=models.PROTECT, db_column='UserID')
+    projectid = models.ForeignKey(Contract, related_name="Contract_UserRole",
+            on_delete=models.PROTECT, blank=True, null=True, db_column='ContractID')
+    roleid = models.ForeignKey(Role, related_name="Role_UserRole",
+            on_delete=models.PROTECT, db_column='RoleID')
     all_projects = models.BooleanField(db_column='AllProjects', default=False, null=True)
 
     def permissions(self):
         """
         Get the permissions for the user role.
         """
-        # permissions = RolePermission.objects.filter(roleid__exact=self.roleid.roleid).values('permissionid')
-        permissions = RolePermission.objects.filter(roleid__exact=self.roleid.roleid).values(
-            'permissionid__permission').annotate(permission = F('permissionid__permission')).values('permission')
+        # permissions = RolePermission.objects.filter(
+        # roleid__exact=self.roleid.roleid).values('permissionid')
+        permissions = RolePermission.objects.filter(
+            roleid__exact=self.roleid.roleid).values(
+            'permissionid__permission').annotate(permission = 
+            F('permissionid__permission')).values('permission')
         return permissions
 
     def board(self):
         """
         Get the board for the user role.
         """
-        return self.roleid.role.lower().find('board') > -1
-    
-    def admin(self): 
+        # if self.roleid and hasattr(self.roleid, 'role'):
+        #     pass
+        return str(self.roleid.role).lower().find('board') > -1
+
+    def admin(self):
         """
         Get the admin for the user role.
         """
-        return self.roleid.role.lower().find('admin') > -1
-    
+        return str(self.roleid.role).lower().find('admin') > -1
+
     def project_manager(self):
         """
         Get the project manager for the user role.
         """
-        user = get_user_model().objects.get(pk=self.projectid.projectmanagerid.id) 
-        return '%s %s' % (user.first_name, user.last_name)
+        user = get_user_model().objects.get(pk=self.projectid.projectmanagerid.id)
+        return f"{user.first_name}, {user.last_name}"
 
-    def financialInfo_confirmor(self):
+    def financial_info_confirmor(self):
         """
         Get the financial info confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Financial Info R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Financial Info R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-        
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
     def hse_confirmor(self):
         """
         Get the hse confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='HSE R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='HSE R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-        
-    def progressState_confirmor(self):
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
+    def progress_state_confirmor(self):
         """
         Get the progress state confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Progress State R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Progress State R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-        
-    def timeProgressState_confirmor(self):
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
+    def time_progress_state_confirmor(self):
         """
         Get the time progress state confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Time Progress State R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Time Progress State R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-        
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
     def invoice_confirmor(self):
         """
         Get the invoice confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Invoices R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Invoices R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
         else:
-            return '' 
-        
-    def financialInvoice_confirmor(self):
+            return ""
+
+    def financial_invoice_confirmor(self):
         """
         Get the financial invoice confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Invoice Financial R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Invoice Financial R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-        
-    def workVolume_confirmor(self):
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
+    def work_volume_confirmor(self):
         """
         Get the work volume confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Work Volume Done R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Work Volume Done R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
         else:
-            return ''                 
-                                
-    def pmsProgress_confirmor(self):
+            return ""
+
+    def pms_progress_confirmor(self):
         """
         Get the pms progress confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='PMS Progress R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='PMS Progress R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return ''  
-        
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
     def budget_confirmor(self):
         """
         Get the budget confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Budget R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Budget R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return ''  
-        
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
     def machinary_confirmor(self):
         """
         Get the machinary confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Machinary R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Machinary R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return ''  
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
 
-    def projectPersonel_confirmor(self):
+    def project_personel_confirmor(self):
         """
         Get the project personel confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Project Personel R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Project Personel R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return ''  
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
 
     def problem_confirmor(self):
         """
         Get the problem confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Problems R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Problems R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return ''  
-        
-    def criticalAction_confirmor(self):
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
+    def critical_action_confirmor(self):
         """
         Get the critical action confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Critical Action R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Critical Action R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return ''  
-           
-    def projectDox_confirmor(self): 
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
+    def project_dox_confirmor(self):
         """
         Get the project dox confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Project Documents R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Project Documents R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-        
-    def periodicDox_confirmor(self):
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
+    def periodic_dox_confirmor(self):
         """
         Get the periodic dox confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Periodic Documents R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Periodic Documents R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-        
-    def zoneImage_confirmor(self):
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
+    def zone_image_confirmor(self):
         """
         Get the zone image confirmor for the user role.
         """
-        roles = RolePermission.objects.filter(permissionid__permission__exact='Zone R/W').values('roleid')
+        roles = RolePermission.objects.filter(
+            permissionid__permission__exact='Zone R/W').values('roleid')
         users = UserRole.objects.filter(projectid__exact=self.projectid, roleid__in=roles)
 
         if len(users) == 1:
-            return '%s %s' % (users[0].userid.first_name, users[0].userid.last_name)
-        else:
-            return '' 
-                        
+            return f"{users[0].userid.first_name}, {users[0].userid.last_name}"
+        return ""
+
     class Meta:
         db_table = 'tbl_JUserRole'
         verbose_name = 'User_Project_Role'
         verbose_name_plural = 'User_Projects_Roles'
-        
+
 
 class RolePermission(models.Model):
     """
     Role permission model for the accounts application.
     """
-    rolepermissionid = models.AutoField(db_column='RolePermissionID', primary_key=True)  # Field name made lowercase.
-    roleid = models.ForeignKey(Role, related_name="Role_RolePermission", on_delete=models.PROTECT, db_column='RoleID')  # Field name made lowercase.
-    permissionid = models.ForeignKey(Permission, related_name="Permission_RolePermission", on_delete=models.PROTECT, db_column='PermissionID')  # Field name made lowercase.
+    rolepermissionid = models.AutoField(db_column='RolePermissionID', primary_key=True)
+    roleid = models.ForeignKey(Role, related_name="Role_RolePermission",
+            on_delete=models.PROTECT, db_column='RoleID')
+    permissionid = models.ForeignKey(Permission, related_name="Permission_RolePermission",
+            on_delete=models.PROTECT, db_column='PermissionID')
 
     class Meta:
         db_table = 'tbl_JRolePermission'
         verbose_name = 'Role_Permission'
         verbose_name_plural = 'Role_Permissions'
-
-

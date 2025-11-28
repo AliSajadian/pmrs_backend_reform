@@ -3,8 +3,8 @@ Serializers for the contracts application.
 """
 from rest_framework import serializers
 
-from accounts.models import *
-from contracts.models import *
+from contracts.models import ContractType, Contract, ContractConsultant, Addendum, \
+     EpcCorporation, Country, Currency, Personeltype, Personel
 
 
 #=========== Contract Serializers ============
@@ -25,17 +25,18 @@ class ContractSerializer(serializers.ModelSerializer):
         model = Contract
         fields = '__all__'
 
+
 class ContractSerializerEx(serializers.ModelSerializer):
     """
     Serializer for the Contract model with extra fields.
     """
-    contracttype = serializers.ReadOnlyField() 
+    contracttype = serializers.ReadOnlyField()
     currency = serializers.ReadOnlyField()
-    
+
     class Meta:
         model = Contract
         fields = ['contractid', 'contracttypeid', 'contracttype', 'contract', 'currency']
-        
+
 
 class CountrySerializer(serializers.ModelSerializer):
     """
@@ -90,15 +91,16 @@ class ContractBaseInfoSerializer(serializers.ModelSerializer):
     planStartShamsiDate = serializers.ReadOnlyField()
     finishShamsiDate = serializers.ReadOnlyField()
     approximateFinishShamsiDate = serializers.ReadOnlyField()
-    
+
     class Meta:
         model = Contract
-        fields = ('contractid', 'contract', 'contractamount_r', 'contractamount_r_', 'extraWorkPrice_r', 
-                  'contractamount_fc', 'contractamount_fc_', 'extraWorkPrice_fc', 'projectmanagerid', 'projectManager', 
-                  'projectManagerImage', 'customer', 'currency', 'startoperationdate', 'notificationdate', 'planstartdate', 
-                  'finishdate', 'duration', 'passedDuration', 'addendumDuration', 'planStartShamsiDate', 'finishShamsiDate', 
-                  'approximateFinishShamsiDate', 'location', 'longitude', 'latitude'
-                 )
+        fields = ('contractid', 'contract', 'contractamount_r', 'contractamount_r_',
+                'extraWorkPrice_r', 'contractamount_fc', 'contractamount_fc_', 'extraWorkPrice_fc',
+                'projectmanagerid', 'projectManager', 'projectManagerImage', 'customer', 'currency',
+                'startoperationdate', 'notificationdate', 'planstartdate', 'finishdate', 'duration',
+                'passedDuration', 'addendumDuration', 'planStartShamsiDate', 'finishShamsiDate', 
+                'approximateFinishShamsiDate', 'location', 'longitude', 'latitude'
+                )
 
 
 class ContractBaseInfoEditSerializer(serializers.ModelSerializer):
@@ -107,13 +109,14 @@ class ContractBaseInfoEditSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Contract
-        fields = ('contractid', 'startoperationdate', 
+        fields = ('contractid', 'startoperationdate',
                   'notificationdate', 'planstartdate', 'finishdate', 
                   'attachmentcontractprice1_r', 'attachmentcontractprice1_fc', 
                   'attachmentcontractprice2_r', 'attachmentcontractprice2_fc', 
                   'attachmentcontractprice3_r', 'attachmentcontractprice3_fc', 
                   'attachmentcontractprice4_r', 'attachmentcontractprice4_fc', 
                   'attachmentcontractprice5_r', 'attachmentcontractprice5_fc')
+
 
 class ContractConsultantSerializer(serializers.ModelSerializer):
     """
@@ -131,19 +134,20 @@ class ContractAddendumSerializer(serializers.ModelSerializer):
     Serializer for the Contract addendum model.
     """
     afteraddendumshamsidate = serializers.ReadOnlyField()
-    
+
     class Meta:
         model = Addendum
-        fields = ('addendumid', 'contractid', 'addendumamount_r', 'addendumamount_fc', 'afteraddendumdate', 'afteraddendumshamsidate')
+        fields = ('addendumid', 'contractid', 'addendumamount_r',
+            'addendumamount_fc', 'afteraddendumdate', 'afteraddendumshamsidate')
 
-                
+
 # class EPCDictField(serializers.DictField):
 #     def to_internal_value(self, data):
 #         # Perform validation on the keys of the dictionary here
 #         if set(data.keys()) != {"value", "label"}:
 #             raise serializers.ValidationError("Invalid keys for dictionary.")
 #         return super().to_internal_value(data)
-    
+
 #     def to_representation(self, value):
 #         return super().to_representation(value)
 
@@ -165,6 +169,12 @@ class ItemSerializer(serializers.Serializer):
     """
     name = serializers.CharField()
     value = serializers.FloatField()
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
 
 
 class EpcCorporationSerializer(serializers.ModelSerializer):

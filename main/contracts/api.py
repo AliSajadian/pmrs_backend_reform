@@ -128,74 +128,97 @@ def get_contract_base_info(request, contract_id, date_id):
         )
 
 
-@api_view(['Patch'])
+@api_view(['PATCH'])
 @permission_classes([permissions.IsAuthenticated])
 def put_start_operation_date(request, contract_id, date):
     """
     Update the start operation date for a contract.
     """
-    response = ContractService().update_start_operation_date(contract_id, date)
-    return response
+    ContractService().update_start_operation_date(contract_id, date)
+    return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
-@api_view(['Patch'])
+@api_view(['PATCH'])
 @permission_classes([permissions.IsAuthenticated])
 def put_notification_date(request, contract_id, date):
     """
     Update the notification date for a contract.
     """
-    response = ContractService().update_notification_date(contract_id, date)
-    return response
+    ContractService().update_notification_date(contract_id, date)
+    return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
-@api_view(['Patch'])
+@api_view(['PATCH'])
 @permission_classes([permissions.IsAuthenticated])
 def put_plan_start_date(request, contract_id, date):
     """
     Update the plan start date for a contract.
     """
-    response = ContractService().update_plan_start_date(contract_id, date)
-    return response
+    ContractService().update_plan_start_date(contract_id, date)
+    return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
-@api_view(['Patch'])
+@api_view(['PATCH'])
 @permission_classes([permissions.IsAuthenticated])
 def put_finish_date(request, contract_id, date):
     """
     Update the finish date for a contract.
     """
-    response = ContractService().update_finish_date(contract_id, date)
-    return response
+    ContractService().update_finish_date(contract_id, date)
+    return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
-class ContractInfo(APIView):
-    """
-    API for the ContractInfo model.
-    """
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]
+class ContractInfoAPI(APIView):
+    """API for contract detailed information."""
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get_contract_consultant(self, request, id):
-        """
-        Get the contract consultant for a contract.
-        """
-        data = ContractService().read_contract_consultant(id)
-        return Response({"status": "success", "data": data}, status=status.HTTP_200_OK)
+    def get(self, request, contract_id):
+        """Get contract consultant and EPC corporation info."""
+        # You can determine what to return based on query params
+        info_type = request.query_params.get('type', 'consultant')
+        
+        if info_type == 'consultant':
+            data = ContractService.read_contract_consultan(contract_id)
+        elif info_type == 'epc':
+            data = ContractService.read_epc_corporation(contract_id)
+        else:
+            data = None
 
-    def get_epc_corporation(self, request, id):
-        """
-        Get the epc corporation for a contract.
-        """
-        response = ContractService().read_epc_corporation(id)
-        return response
+        return Response({
+            "status": "success",
+            "data": data
+        }, status=status.HTTP_200_OK)
 
-    def put_contract_base_info(self, request, id):
-        """
-        Update the contract base info for a contract.
-        """
-        response = ContractService().update_contract_base_info(request, id)
-        return response
+    def patch(self, request, contract_id):
+        """Update the contract base info."""
+        updated_data = ContractService.update_contract_base_info(contract_id, request.data)
+        return Response({
+            "status": "success",
+            "data": updated_data
+        }, status=status.HTTP_200_OK)
+
+
+# Alternative: Separate views for consultant and EPC
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_contract_consultant(request, contract_id):
+    """Get the contract consultant for a contract."""
+    data = ContractService.get_contract_consultant(contract_id)
+    return Response({
+        "status": "success",
+        "data": data
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_epc_corporation(request, contract_id):
+    """Get the EPC corporation for a contract."""
+    data = ContractService.get_epc_corporation(contract_id)
+    return Response({
+        "status": "success",
+        "data": data
+    }, status=status.HTTP_200_OK)
 
 
 # pylint: disable=too-many-ancestors
@@ -215,5 +238,5 @@ class ContractAddendumAPI(viewsets.ModelViewSet):
         """
         Get the contract addendum list for a contract.
         """
-        response = ContractService().read_contract_addendum_list(request, contract_id)
-        return response
+        data = ContractService().read_contract_addendum_list(request, contract_id)
+        return Response({"status": "success", "data": data}, status=status.HTTP_200_OK)

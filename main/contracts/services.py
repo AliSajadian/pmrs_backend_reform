@@ -5,16 +5,15 @@ import datetime
 import math
 import jdatetime
 import logging
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.exceptions import NotFound
 
 from contracts.models import Contract, ContractConsultant, EpcCorporation, Addendum
 from accounts.models import UserRole
 from projects.models import ReportConfirm
-from .serializers import ContractTypeSerializer, ContractSerializer, ContractSerializerEx, \
-    CountrySerializer, CurrencySerializer, PersonelTypeSerializer, PersonelSerializer, \
-    ContractBaseInfoSerializer, ContractConsultantSerializer, EpcCorporationSerializer, \
-    ContractAddendumSerializer
+from .serializers import ContractSerializerEx, ContractBaseInfoSerializer, ContractConsultantSerializer, \
+    EpcCorporationSerializer, ContractAddendumSerializer
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,23 +31,30 @@ class ContractService:
             userid__exact=userid,
             projectid__exact=None
         )
+
         if len(all_contracts) == 1:
             contracts = Contract.objects.all().order_by('-startdate')
-            serializer = ContractSerializerEx(contracts, many=True)
         else:
-            contracts = Contract.objects.filter(Contract_UserRole__userid__exact=userid).order_by(
-                '-startdate').distinct()
-            serializer = ContractSerializerEx(contracts, many=True)
+            contracts = Contract.objects.filter(
+                Contract_UserRole__userid__exact=userid
+                ).order_by('-startdate').distinct()
 
+        serializer = ContractSerializerEx(contracts, many=True)
         return serializer.data
 
     @staticmethod
     def read_contract_base_info(contract_id, date_id):
         """
         Get the contract base info for a contract.
+        Returns dict with contractInfo and projectManagerConfirmed.
         """
-        contract_base_info = Contract.objects.get(pk=contract_id)
-        serializer = ContractBaseInfoSerializer(instance=contract_base_info, many=False)
+        try:
+            contract = Contract.objects.get(pk=contract_id)
+        except Contract.DoesNotExist:
+            logger.error("Contract not found: %s", contract_id)
+            raise NotFound(f"Contract with id {contract_id} not found")
+
+        serializer = ContractBaseInfoSerializer(instance=contract, many=False)
 
         report_confirmed = ReportConfirm.objects.filter(
             contractid__exact=contract_id,
@@ -59,48 +65,63 @@ class ContractService:
         return serializer.data, True if report_confirmed is not None and len(report_confirmed) > 0 else False
 
     @staticmethod
-    def read_contract_consultant(id):
+    def read_contract_consultant(contract_id):
         """
         Get the contract consultant for a contract.
+        Returns serialized data (list of dicts).
         """
-        contract_onsultants = ContractConsultant.objects.filter(contractid__exact=id)
-        serializer = ContractConsultantSerializer((contract_onsultants 
-            if len(contract_onsultants) > 0 
-            else None) 
-                if contract_onsultants is not None 
-                else None, 
-            many=True)
+        consultants = ContractConsultant.objects.filter(contractid=contract_id)
+        serializer = ContractConsultantSerializer(consultants, many=True)
         return serializer.data
-    
+
     @staticmethod
-    def read_contract_addendum_list(request, contract_id):
+    def read_contract_addendums(contract_id):
         """
         Get the contract addendum list for a contract.
+        Returns serialized data (list of dicts).
         """
-        contract_addendums = Addendum.objects.filter(contractid__exact=contract_id)
-        serializer = ContractAddendumSerializer(contract_addendums, many=True)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        addendums = Addendum.objects.filter(contractid=contract_id)
+        serializer = ContractAddendumSerializer(addendums, many=True)
+        return serializer.data
 
     @staticmethod
-    def update_epc_corporation(request, id):
+    def read_epc_corporation(contract_id):
         """
-        Get the epc corporation for a contract.
+        Get the EPC corporation for a contract.
+        Returns serialized data (dict or None).
         """
-        contract_corporations = EpcCorporation.objects.filter(contractid__exact=id).first()
-        serializer = EpcCorporationSerializer(contract_corporations)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        try:
+            corporation = EpcCorporation.objects.filter(contractid=contract_id).first()
+            if not corporation:
+                return None
+            serializer = EpcCorporationSerializer(corporation)
+            return serializer.data
+        except ObjectDoesNotExist:
+            logger.warning("EPC Corporation not found for contract: %s", contract_id)
+            return None
 
     @staticmethod
-    def update_contract_base_info(request, id):
+    def update_contract_base_info(contract_id, data):
         """
         Update the contract base info for a contract.
+        Returns updated serialized data (dict).
         """
-        contract = Contract.objects.get(pk=id)
-        serializer = ContractBaseInfoSerializer(instance=contract, data=request.data, partial=True)
+        try:
+            contract = Contract.objects.get(pk=contract_id)
+        except Contract.DoesNotExist:
+            logger.error("Contract not found: %s", contract_id)
+            raise NotFound(f"Contract with id {contract_id} not found")
+
+        serializer = ContractBaseInfoSerializer(
+            instance=contract,
+            data=data,
+            partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        serializer = ContractBaseInfoSerializer(instance=contract, many=False)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        
+        # Return fresh serialized data
+        return ContractBaseInfoSerializer(contract).data
 
     @staticmethod
     def update_start_operation_date(contract_id, date):
@@ -112,7 +133,6 @@ class ContractService:
 
         Contract.objects.filter(
             contractid__exact=contract_id).update(startoperationdate=start_operation_date)
-        return Response({"status": "success"}, status=status.HTTP_200_OK)
 
     @staticmethod
     def update_notification_date(contract_id, date):
@@ -124,7 +144,6 @@ class ContractService:
 
         Contract.objects.filter(
             contractid__exact=contract_id).update(notificationdate=notification_date)
-        return Response({"status": "success"}, status=status.HTTP_200_OK)
 
     @staticmethod
     def update_plan_start_date(contract_id, date):
@@ -135,7 +154,6 @@ class ContractService:
         plan_start_date = datetime.strptime(str(date), date_format)
 
         Contract.objects.filter(contractid__exact=contract_id).update(planstartdate=plan_start_date)
-        return Response({"status": "success"}, status=status.HTTP_200_OK)
 
     @staticmethod
     def update_finish_date(contract_id, date):
@@ -146,7 +164,6 @@ class ContractService:
         finish_date = datetime.strptime(str(date), date_format)
 
         Contract.objects.filter(contractid__exact=contract_id).update(finishdate=finish_date)
-        return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
 def gregorian_to_shamsi(date):

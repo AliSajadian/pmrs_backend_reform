@@ -12,7 +12,7 @@ from datetime import datetime
 # from django.contrib.auth import get_user_model
 from django.contrib.auth import get_user_model
 from accounts.models import *
-from .services import gregorian_to_shamsi
+from .utils import gregorian_to_shamsi
 
 
 class CompanyType(models.Model):

@@ -68,6 +68,8 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'main.exceptions.custom_exception_handler',
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # JWT Authentication (Primary)
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -171,7 +173,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
 MIDDLEWARE = [
-    'main.exceptions.custom_exception_handler',
+    # 'main.exceptions.custom_exception_handler',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -240,9 +242,9 @@ WSGI_APPLICATION = 'main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'db_cost_control',
+        'NAME': 'DbPmrs',
         'USER': 'sa',
-        'PASSWORD': '1234567890',
+        'PASSWORD': 'aSj#147760036%mM&',
         'HOST': '127.0.0.1',  # Use 127.0.0.1 instead of localhost
         'PORT': '1434',
         'OPTIONS': {

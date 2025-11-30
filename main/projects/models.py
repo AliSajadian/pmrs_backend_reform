@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from django.conf import settings
 from contracts.models import Contract, EpcCorporation
-from contracts.services import gregorian_to_shamsi, gregorian_to_shamsi_show
+from contracts.utils import gregorian_to_shamsi, gregorian_to_shamsi_show
 
 
 class ReportDate(models.Model):

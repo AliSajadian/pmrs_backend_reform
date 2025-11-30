@@ -5,7 +5,7 @@ from rest_framework import routers
 from django.urls import path
 
 from .api import ContractTypeAPI, CurrencyAPI, CountryAPI, ContractAddendumAPI, PersonelTypeAPI, \
-    PersonelAPI, ContractAPIEx, ContractInfo, get_contract_base_info, put_start_operation_date, \
+    PersonelAPI, ContractAPIEx, ContractInfoAPI, get_contract_base_info, put_start_operation_date, \
         put_notification_date, put_plan_start_date, put_finish_date
 
 router = routers.DefaultRouter()
@@ -29,12 +29,13 @@ urlpatterns = [
         put_plan_start_date, name='planStartDate'),
     path('api/contract/updateFinishDate/<int:contract_id>/<str:date>/',
         put_finish_date, name='finishDate'),
-    path('api/contractUpdate/<int:pk>/',
-        ContractInfo.put_contract_base_info, name='contractUpdate'),
-    path('api/contractConsultants/<int:pk>/',
-        ContractInfo.get_contract_consultant, name='contractConsultants'),
-    path('api/contractCorporations/<int:pk>/',
-        ContractInfo.get_epc_corporation, name='contractCorporations'),
+    path('contract-info/', ContractInfoAPI.as_view(), name='contract-info'),
+    # path('api/contractUpdate/<int:pk>/',
+    #     ContractInfo.put_contract_base_info, name='contractUpdate'),
+    # path('api/contractConsultants/<int:pk>/',
+    #     ContractInfo.get_contract_consultant, name='contractConsultants'),
+    # path('api/contractCorporations/<int:pk>/',
+    #     ContractInfo.get_epc_corporation, name='contractCorporations'),
     path('api/contractAddendums/contractAddendumList/<int:contract_id>/',
         ContractAddendumAPI.contract_addendum_list, name='contractAddendumList'),
 ]

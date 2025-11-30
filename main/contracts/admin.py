@@ -48,7 +48,7 @@ class CompanyAdmin(admin.ModelAdmin):
     """
     Admin for the Company model.
     """
-    list_display = ('company', 'get_companyType')
+    list_display = ('company', 'get_company_type')
     ordering = ['-companytypeid']
     search_fields = ['company']
 
@@ -210,7 +210,7 @@ class ContractAdmin(admin.ModelAdmin):
     Admin for the Contract model.
     """
     form = ContractForm
-    list_display = ('contractno', 'contract', 'get_contractType', 'duration')
+    list_display = ('contractno', 'contract', 'get_contract_type', 'duration')
     fields = ('contractno', 'contract', 'contracttypeid', 'projectmanagerid', 'customerid',
               'coordinatorid', 'startoperationdate', 'finishdate', 'notificationdate',  
               'validationdate', 'planstartdate', 'startdate', 'duration', 'contractamount_r', 

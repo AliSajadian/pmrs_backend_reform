@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 from datetime import datetime
 
 from contracts.models import Contract
-from contracts.services import GregorianToShamsi
-from projects_files.services import SetReportVisit
+from contracts.utils import gregorian_to_shamsi
+from projects_files.utils import set_report_visit
 from projects.models import (
     ReportDate, ReportConfirm, FinancialInfo, Hse, ProgressState,
     TimeprogressState, Invoice, FinancialInvoice, WorkVolume, 
@@ -31,7 +31,7 @@ class ReportDateService:
         y1 = int(date.year)
         m1 = int(date.month)
 
-        now = GregorianToShamsi(datetime.now())
+        now = gregorian_to_shamsi(datetime.now())
         y2 = int(now[0:4])
         m2 = int(now[5:now.find('-', 5)])
         
@@ -183,7 +183,7 @@ class FinancialInfoService:
     @staticmethod
     def get_or_create_financial_info(user_id, contract_id, date_id, report_id):
         """Get or create financial info for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = FinancialInfo.objects.filter(
             contractid__exact=contract_id, 
@@ -295,7 +295,7 @@ class HseService:
     @staticmethod
     def get_or_create_hse(user_id, contract_id, date_id, report_id):
         """Get or create HSE data for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = Hse.objects.filter(
             contractid__exact=contract_id, 
@@ -337,7 +337,7 @@ class ProgressStateService:
     @staticmethod
     def get_or_create_progress_state(user_id, contract_id, date_id, report_id):
         """Get or create progress state for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = ProgressState.objects.filter(
             contractid__exact=contract_id, 
@@ -380,7 +380,7 @@ class TimeProgressStateService:
     @staticmethod
     def get_or_create_time_progress_state(user_id, contract_id, date_id, report_id):
         """Get or create time progress state for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = TimeprogressState.objects.filter(
             contractid__exact=contract_id, 
@@ -408,7 +408,7 @@ class InvoiceService:
     @staticmethod
     def get_or_create_invoices(user_id, contract_id, date_id, report_id):
         """Get or create invoices for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = Invoice.objects.filter(
             contractid__exact=contract_id, 
@@ -537,7 +537,7 @@ class WorkVolumeService:
     @staticmethod
     def get_or_create_work_volumes(user_id, contract_id, date_id, report_id):
         """Get or create work volumes for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         contract = Contract.objects.get(pk=contract_id)
         date = ReportDate.objects.get(pk=date_id)
@@ -622,7 +622,7 @@ class PmsProgressService:
     @staticmethod
     def get_or_create_pms_progress(user_id, contract_id, date_id, report_id):
         """Get or create PMS progress for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         contract = Contract.objects.get(pk=contract_id)
         date = ReportDate.objects.get(pk=date_id)
@@ -695,7 +695,7 @@ class BudgetCostService:
     @staticmethod
     def get_or_create_budget_cost(user_id, contract_id, date_id, report_id):
         """Get or create budget cost for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = Budgetcost.objects.filter(
             contractid__exact=contract_id, 
@@ -755,7 +755,7 @@ class MachineryService:
     @staticmethod
     def get_or_create_machinery(user_id, contract_id, date_id, report_id):
         """Get or create machinery for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         contract = Contract.objects.get(pk=contract_id)
         date = ReportDate.objects.get(pk=date_id)
@@ -881,7 +881,7 @@ class ProjectPersonnelService:
     @staticmethod
     def get_or_create_project_personnel(user_id, contract_id, date_id, report_id):
         """Get or create project personnel for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = ProjectPersonnel.objects.filter(
             contractid__exact=contract_id, 
@@ -917,7 +917,7 @@ class ProblemService:
     @staticmethod
     def get_problems(user_id, contract_id, date_id, report_id):
         """Get problems for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         return Problem.objects.filter(
             contractid__exact=contract_id, 
@@ -939,7 +939,7 @@ class CriticalActionService:
     @staticmethod
     def get_critical_actions(user_id, contract_id, date_id, report_id):
         """Get critical actions for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         return CriticalAction.objects.filter(
             contractid__exact=contract_id, 
@@ -978,7 +978,7 @@ class FinancialInvoiceService:
     @staticmethod
     def get_or_create_financial_invoices(user_id, contract_id, date_id, report_id):
         """Get or create financial invoices for a contract and date."""
-        SetReportVisit(user_id, contract_id, date_id, report_id)
+        set_report_visit(user_id, contract_id, date_id, report_id)
         
         exists = FinancialInvoice.objects.filter(
             contractid__exact=contract_id, 

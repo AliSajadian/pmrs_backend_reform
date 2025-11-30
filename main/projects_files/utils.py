@@ -8,7 +8,7 @@ from projects.models import ReportDate
 from projects_files.models import ReportVisit, ReportVisitdate
 
 
-def SetReportVisit(userId, contractId, dateId, reportId):
+def set_report_visit(userId, contractId, dateId, reportId):
     """
     Set the report visit for the projects_files application.
     """

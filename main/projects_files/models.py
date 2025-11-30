@@ -13,7 +13,7 @@ from django.dispatch import receiver
 from django.core.files.storage import FileSystemStorage
 
 from contracts.models import Contract
-from contracts.services import gregorian_to_shamsi
+from contracts.utils import gregorian_to_shamsi
 from projects.models import ReportDate
 
 

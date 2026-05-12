@@ -4,3 +4,20 @@ pytz==2025.2
 sqlparse==0.4.4
 typing_extensions==4.1.1
 tzdata==2025.2
+
+# JWT Authentication
+djangorestframework-simplejwt==5.2.2
+PyJWT==2.8.0
+
+# Redis for token storage
+redis==4.5.5
+django-redis==5.2.0
+
+# Other dependencies (already installed but not listed)
+djangorestframework==3.14.0
+django-knox==4.2.0
+django-cors-headers==3.14.0
+django-extensions==3.2.1
+jdatetime==4.1.0
+mssql-django==1.2
+pillow==10.0.0

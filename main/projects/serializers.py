@@ -105,6 +105,16 @@ class FinancialInfoReportSerializer(serializers.ModelSerializer):
         fields = ("estdebitcredit_r", "estcost_r", "estclientpayment_r")
 
 
+class FinancialInfoFCReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the FinancialInfoReport model.
+    """
+    class Meta:
+        model = FinancialInfo
+        fields = ("estdebitcredit_fc", "estcost_fc", "estclientpayment_fc")
+
+
+
 class HseSerializer(serializers.ModelSerializer):
     """
     Serializer for the Hse model.
@@ -253,6 +263,22 @@ class InvoiceReport1Serializer(serializers.ModelSerializer):
         fields = ("allReceived", "cp_pp_r", "confirmedAmount", "pp_pp_r", "cvat_r", 
                   "confirmedInvoiceAmounts", "sentInvoiceAmounts", "aci_g_r", "icc_g_r", "aca_g_r", "acc_g_r", "ew_g_r", "ewcc_g_r",
                   "receivePercent")
+        
+class InvoiceFCReport1Serializer(serializers.ModelSerializer):
+    """
+    Serializer for the InvoiceFCReport1 model.
+    """
+    confirmedInvoiceFCAmounts = serializers.ReadOnlyField()
+    sentInvoiceFCAmounts = serializers.ReadOnlyField()
+    receiveFCPercent = serializers.ReadOnlyField()
+    allFCReceived = serializers.ReadOnlyField()
+    confirmedFCAmount = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = Invoice
+        fields = ("allFCReceived", "cp_pp_fc", "confirmedFCAmount", "pp_pp_fc", "cvat_fc", 
+                  "confirmedInvoiceFCAmounts", "sentInvoiceFCAmounts", "aci_g_fc", "icc_g_fc", "aca_g_fc", "acc_g_fc", "ew_g_fc", "ewcc_g_fc",
+                  "receiveFCPercent")
 
 
 class InvoiceReport2Serializer(serializers.ModelSerializer):
@@ -266,6 +292,19 @@ class InvoiceReport2Serializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = ("confirmedAmount", "persianMonth", "totalCumulativeReceiveAmount")
+
+
+class InvoiceFCReport2Serializer(serializers.ModelSerializer):
+    """
+    Serializer for the InvoiceReport2 model.
+    """
+    confirmedFCAmount = serializers.ReadOnlyField()
+    totalCumulativeReceiveFCAmount = serializers.ReadOnlyField()
+    persianMonth = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = Invoice
+        fields = ("confirmedFCAmount", "persianMonth", "totalCumulativeReceiveFCAmount")
 
 
 class FinancialInvoiceSerializer(serializers.ModelSerializer):
@@ -289,12 +328,24 @@ class FinancialInvoiceReportSerializer(serializers.ModelSerializer):
     """
     Serializer for the FinancialInvoiceReport model.
     """
-    financialDepartmentConfirmedAmount = serializers.IntegerField()
+    confirmedAmount = serializers.IntegerField()
     persianMonth = serializers.ReadOnlyField()
     
     class Meta:
         model = FinancialInvoice
-        fields = ("financialDepartmentConfirmedAmount", "persianMonth")
+        fields = ("confirmedAmount", "persianMonth")
+
+
+class FinancialInvoiceFCReportSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the FinancialInvoiceFCReport model.
+    """
+    confirmedFCAmount = serializers.IntegerField()
+    persianMonth = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = FinancialInvoice
+        fields = ("confirmedFCAmount", "persianMonth")
 
 
 class WorkvolumeSerializer(serializers.ModelSerializer):

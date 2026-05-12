@@ -13,7 +13,7 @@ from django.dispatch import receiver
 from django.core.files.storage import FileSystemStorage
 
 from contracts.models import Contract
-from contracts.services import GregorianToShamsi
+from contracts.services import gregorian_to_shamsi
 from projects.models import ReportDate
 
 
@@ -218,7 +218,7 @@ class ContractorDox(models.Model):
         """
         Get the contract shamsi date for the ContractorDox model.
         """
-        return GregorianToShamsi(self.contractdate) if self.contractdate is not None else ''
+        return gregorian_to_shamsi(self.contractdate) if self.contractdate is not None else ''
 
     def filename(self):
         """
@@ -356,19 +356,19 @@ class InvoiceDox(models.Model):
         """
         Get the invoice shamsi date for the InvoiceDox model.
         """
-        return GregorianToShamsi(self.invoicedate) if self.invoicedate is not None else ''
+        return gregorian_to_shamsi(self.invoicedate) if self.invoicedate is not None else ''
 
     def sendshamsidate(self):
         """
         Get the send date for the InvoiceDox model.
         """
-        return GregorianToShamsi(self.senddate) if self.senddate is not None else ''
+        return gregorian_to_shamsi(self.senddate) if self.senddate is not None else ''
 
     def confirmshamsidate(self):
         """
         Get the confirm date for the InvoiceDox model.
         """
-        return GregorianToShamsi(self.confirmdate) if self.confirmdate is not None else ''
+        return gregorian_to_shamsi(self.confirmdate) if self.confirmdate is not None else ''
 
     def filename(self):
         """
@@ -433,19 +433,19 @@ class ApprovedInvoiceDox(models.Model):
         """
         Get the invoice shamsi date for the ApprovedInvoiceDox model.
         """
-        return GregorianToShamsi(self.invoicedate) if self.invoicedate is not None else ''
+        return gregorian_to_shamsi(self.invoicedate) if self.invoicedate is not None else ''
 
     def sendshamsidate(self):
         """
         Get the send date for the ApprovedInvoiceDox model.
         """
-        return GregorianToShamsi(self.senddate) if self.senddate is not None else ''
+        return gregorian_to_shamsi(self.senddate) if self.senddate is not None else ''
 
     def confirmshamsidate(self):
         """
         Get the confirm date for the ApprovedInvoiceDox model.
         """
-        return GregorianToShamsi(self.confirmdate) if self.confirmdate is not None else ''
+        return gregorian_to_shamsi(self.confirmdate) if self.confirmdate is not None else ''
 
     def filename(self):
         """

@@ -21,7 +21,6 @@ from .serializers import UserSerializer, UserExSerializer, UserGroupSerializer, 
    LoginSerializer, PasswordSerializer
 from .models import UserRole
 
-
 class UserCreateAPI(generics.GenericAPIView):
     """
     Create a new user.
@@ -276,14 +275,13 @@ class ProjectConfirmersAPI(APIView):
         permissions.IsAuthenticated
     ]
 
-    def get(self, **kwargs):
+    def get(self, request, contractid):
         """
         Get the project confirmers for a contract.
         """
-        contract_id = kwargs["contractid"]
-        user_roles = UserRole.objects.filter(projectid__exact=contract_id)
-        serializer = ProjectConfirmersSerializers(instance=(user_roles[0] \
-            if len(user_roles) > 0 else None) if user_roles is not None else None, many=False)
+        user_roles = UserRole.objects.filter(projectid__exact=contractid)
+        instance = user_roles.first() if user_roles.exists() else None
+        serializer = ProjectConfirmersSerializers(instance=instance, many=False)
 
         return Response({"status": 'success', "data": serializer.data},
                     status=status.HTTP_200_OK)
@@ -328,9 +326,10 @@ class LoginAPI(generics.GenericAPIView):
         user_roles = []
         user_contract_permissions_serializer = []
         user_roles = UserRole.objects.filter(userid__exact=user.id)
-        # if(user_roles[0].all_projects == None or user_roles[0].all_projects == False):
-        user_contract_permissions_serializer = UserContractPermissionsSerializers(
-            instance=user_roles, many=True)
+        if user_roles and (user_roles[0].all_projects == None or user_roles[0].all_projects == False):
+            user_contract_permissions_serializer = UserContractPermissionsSerializers(
+                instance=user_roles, many=True)
+
         # usergrouppermissions = []
         # usergroups = ()
         # for group in user.groups.all():

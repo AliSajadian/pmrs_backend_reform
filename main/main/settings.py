@@ -32,8 +32,9 @@ ALLOWED_HOSTS = ['*']
 # CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:5174',
-     'http://localhost:5173'# The default port for create-react-app
+    'http://localhost:5173',# The default port for create-react-app
+    'http://localhost:5174',
+    'http://localhost:5175',
 ]
 
 # RECAPTCHA_PUBLIC_KEY = 'your-public-key'

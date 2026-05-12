@@ -5,21 +5,20 @@ This module contains the models for the contracts application.
 """
 import django
 from django.db import models
-from django.db.models import Sum, Max
+from django.db.models import Sum, Max, F
 from django.conf import settings
 from datetime import datetime
 
 # from django.contrib.auth import get_user_model
 from django.contrib.auth import get_user_model
-from accounts.models import *
-from .services import GregorianToShamsi
+from .services import gregorian_to_shamsi
 
 
 class CompanyType(models.Model):
     """
     Company type model for the contracts application.
     """
-    companytypeid = models.AutoField(db_column='CompanyTypeID', primary_key=True)  
+    companytypeid = models.AutoField(db_column='CompanyTypeID', primary_key=True)
     companytype = models.CharField(db_column='CompanyType', unique=True, max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS')  
 
     def __str__(self) -> str:
@@ -288,25 +287,25 @@ class Contract(models.Model):
         """
         Get the start operation date in Shamsi.
         """
-        return GregorianToShamsi(self.startoperationdate) if self.startoperationdate is not None else ''           
+        return gregorian_to_shamsi(self.startoperationdate) if self.startoperationdate is not None else ''           
 
     def notificationShamsiDate(self):
         """
         Get the notification date in Shamsi.
         """
-        return GregorianToShamsi(self.notificationdate) if self.notificationdate is not None else ''
+        return gregorian_to_shamsi(self.notificationdate) if self.notificationdate is not None else ''
     
     def finishShamsiDate(self):
         """
         Get the finish date in Shamsi.
         """
-        return GregorianToShamsi(self.finishdate) if self.finishdate is not None else ''
+        return gregorian_to_shamsi(self.finishdate) if self.finishdate is not None else ''
 
     def planStartShamsiDate(self):
         """
         Get the plan start date in Shamsi.
         """
-        return GregorianToShamsi(self.planstartdate) if self.planstartdate is not None else ''
+        return gregorian_to_shamsi(self.planstartdate) if self.planstartdate is not None else ''
     
     def passedDuration(self):
         """
@@ -322,13 +321,13 @@ class Contract(models.Model):
             # diff = relativedelta.relativedelta(now, startdate)
             # return diff.months + diff.years * 12
         else:
-            last_addendum_date = Addendum.objects.filter(contractid__exact=self.contractid).alast()["afteraddendumdate"]
-            if last_addendum_date is not None:
+            last_addendum = Addendum.objects.filter(contractid__exact=self.contractid).order_by("afteraddendumdate").last()
+            if last_addendum is not None and last_addendum.afteraddendumdate is not None:
                 date_format = "%Y-%m-%d"
                 now = datetime.strptime(str(datetime.now().date()), date_format)
-                last_addendum_date = datetime.strptime(str(last_addendum_date), date_format)
+                last_addendum_date = datetime.strptime(str(last_addendum.afteraddendumdate), date_format)
                 months = (now.year - last_addendum_date.year) * 12 + (now.month - last_addendum_date.month)
-                return months
+                return abs(months)
             return self.duration 
 
     def approximateFinishShamsiDate(self):
@@ -339,11 +338,10 @@ class Contract(models.Model):
             contractid__exact=self.contractid).aggregate(Max('afteraddendumdate'))['afteraddendumdate__max']
 
         if afteraddendumdate_max is None:
-            return GregorianToShamsi(self.finishdate) if self.finishdate is not None else ''
+            return gregorian_to_shamsi(self.finishdate) if self.finishdate is not None else ''
         else:
-            return GregorianToShamsi(afteraddendumdate_max)
+            return gregorian_to_shamsi(afteraddendumdate_max)
        
-
     def addendumDuration(self):
         """
         Get the addendum duration in months.
@@ -355,10 +353,10 @@ class Contract(models.Model):
             return 0
         
         date_format = "%Y-%m-%d"
-        now = datetime.strptime(str(afteraddendumdate_max), date_format)
-        startdate = datetime.strptime(str(self.finishdate), date_format)
-        months = (now.year - startdate.year) * 12 + (now.month - startdate.month)
-        return months
+        newFinishdate = datetime.strptime(str(afteraddendumdate_max), date_format)
+        finishdate = datetime.strptime(str(self.finishdate), date_format)
+        months = (newFinishdate.year - finishdate.year) * 12 + (newFinishdate.month - finishdate.month)
+        return abs(months)
     
     def __str__(self) -> str:
         """
@@ -458,7 +456,21 @@ class EpcCorporation(models.Model):
         verbose_name = 'Contract_Corporation'
         verbose_name_plural = 'Contract_Corporations'
 
-# date.today()
+
+class ContractSuspend(models.Model):
+    contractsuspendid = models.AutoField(db_column='ContractSuspendID', primary_key=True)  
+    contractid = models.ForeignKey(Contract, related_name="Suspends", on_delete=models.PROTECT, db_column='ContractID')  
+    suspenddate = models.DateField(db_column='SuspendDate', default=django.utils.timezone.now, null=True)  
+    resumedate = models.DateField(db_column='ResumeDate', null=True)  
+
+    # def project_d
+
+    class Metha:
+        db_table = 'tbl_ContractSuspend'
+        verbose_name = 'Contract_Suspend'
+        verbose_name_plural = 'Contract_Suspends'
+        
+
 class Addendum(models.Model):
     """
     Addendum model for the contracts application.
@@ -474,7 +486,7 @@ class Addendum(models.Model):
         """
         Get the after addendum date in Shamsi.
         """
-        return GregorianToShamsi(self.afteraddendumdate) if self.afteraddendumdate is not None else ''
+        return gregorian_to_shamsi(self.afteraddendumdate) if self.afteraddendumdate is not None else ''
 
     class Meta:
         db_table = 'tbl_Addendum'

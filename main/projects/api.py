@@ -10,19 +10,20 @@ from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from contracts.models import *
-from contracts.services import GregorianToShamsi
+from contracts.services import gregorian_to_shamsi
 from projects_files.services import SetReportVisit
 from projects.models import ReportDate, ReportConfirm, FinancialInfo, Hse, ProgressState, \
     TimeprogressState, Invoice, FinancialInvoice, WorkVolume, PmsProgress, Budgetcost, Problem, \
-        CriticalAction, ContractReportDate, Machinary, ProjectPersonnel 
+    CriticalAction, ContractReportDate, Machinary, ProjectPersonnel 
 from .serializers import ReportDateSerializerEx, ReportConfirmSerializer, ReportsConfirmedSerializer, \
     ProjectManagerReportConfirmSerializer, CoordinatorReportConfirmSerializer, FinancialInfoSerializer, \
-        FinancialInfoReportSerializer, HseSerializer, ProgressStateSerializer, TimeProgressStateSerializer, \
-            InvoiceSerializer, FinancialInvoiceSerializer, WorkvolumeSerializer, PmsprogressSerializer, \
-                BudgetCostSerializer, MachinerySerializer, ProjectPersonalSerializer, ProblemSerializer, \
-                    CriticalActionSerializer, HseReportSerializer, ProgressStateReportSerializer, \
-                        InvoiceReport1Serializer, InvoiceReport2Serializer, FinancialInvoiceReportSerializer, \
-                            BudgetCostReportSerializer, ProjectPersonalReportSerializer
+    FinancialInfoReportSerializer, FinancialInfoFCReportSerializer, HseSerializer, ProgressStateSerializer, \
+    TimeProgressStateSerializer, InvoiceSerializer, FinancialInvoiceSerializer, WorkvolumeSerializer, \
+    PmsprogressSerializer, BudgetCostSerializer, MachinerySerializer, ProjectPersonalSerializer, \
+    ProblemSerializer, CriticalActionSerializer, HseReportSerializer, ProgressStateReportSerializer, \
+    InvoiceReport1Serializer, InvoiceReport2Serializer, InvoiceFCReport1Serializer, InvoiceFCReport2Serializer, \
+    FinancialInvoiceFCReportSerializer, FinancialInvoiceReportSerializer, BudgetCostReportSerializer, \
+    ProjectPersonalReportSerializer
 
 
 class ReportDateAPIEx(APIView):
@@ -52,9 +53,10 @@ class ReportDateAPIEx(APIView):
         y1 = int(date.year)
         m1 = int(date.month)
 
-        now = GregorianToShamsi(datetime.now())
+        now = gregorian_to_shamsi(datetime.now())
+        print("now: ", now)
         y2 = int(now[0:4])
-        m2 = int(now[5:now.find('-', 5)])
+        m2 = int(now[5:now.find(',' if now.find(',', 5) > 0 else '-', 5)])
         if(m2 > 1):
             m2 = m2 - 1
         else:
@@ -291,7 +293,7 @@ class FinancialInfoAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
-    def contractMonthReportList(self, *args, **kwargs):
+    def contract_month_report_list(self, *args, **kwargs):
         """
         Get the financial info for the contract month report.
         """
@@ -304,6 +306,23 @@ class FinancialInfoAPI(viewsets.ModelViewSet):
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    @action(detail=False, methods=['get'])
+    def contract_month_fc_report_list(self, *args, **kwargs):
+        """
+        Get the financial info for the contract month report.
+        """
+        try:
+            contractId = int(kwargs["contractid"])
+            dateId = int(kwargs["dateid"])
+                                    
+            financialInfos = FinancialInfo.objects.filter(contractid__exact=contractId, dateid__exact=dateId)
+            serializer = FinancialInfoFCReportSerializer(instance=financialInfos[0] if len(financialInfos) > 0 else None, many=False)
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     @action(detail=False, methods='post')
     def updateFinancialInfo(self, request, *args, **kwargs):
@@ -458,7 +477,7 @@ class HseAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
-    def contractMonthReportList(self, *args, **kwargs):
+    def contract_month_report_list(self, *args, **kwargs):
         """
         Get the HSE for the contract month report.
         """
@@ -514,7 +533,7 @@ class ProgressStateAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, *args, **kwargs):
+    def contract_month_report_list(self, *args, **kwargs):
         """
         Get the progress state for the contract month report.
         """
@@ -647,7 +666,7 @@ class InvoiceAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
-    def contractMonthReportList1(self, request, *args, **kwargs):
+    def contract_month_report_list1(self, request, *args, **kwargs):
         """
         Get the invoice for the contract month report.
         """
@@ -661,8 +680,23 @@ class InvoiceAPI(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['get'])
+    def contract_month_fc_report_list1(self, request, *args, **kwargs):
+        """
+        Get the invoice for the contract month report.
+        """
+        try:
+            contractId = int(kwargs["contractid"])
+            dateId = int(kwargs["dateid"])
+            
+            invoice = Invoice.objects.filter(contractid__exact=contractId, dateid__exact=dateId)
+            serializer = InvoiceFCReport1Serializer(instance=invoice[0] if len(invoice) > 0 else None, many=False)
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=True, methods=['get'])
-    def contractMonthReportList2(self, request, *args, **kwargs):
+    def contract_month_report_list2(self, request, *args, **kwargs):
         """
         Get the invoice for the contract month report.
         """
@@ -672,6 +706,21 @@ class InvoiceAPI(viewsets.ModelViewSet):
             
             invoices = Invoice.objects.filter(contractid__exact=contractId, dateid__lte=dateId).order_by('-dateid')[:9:-1]
             serializer = InvoiceReport2Serializer(instance=invoices, many=True)
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['get'])
+    def contract_month_fc_report_list2(self, request, *args, **kwargs):
+        """
+        Get the invoice for the contract month report.
+        """
+        try:
+            contractId = int(kwargs["contractid"])
+            dateId = int(kwargs["dateid"])
+            
+            invoices = Invoice.objects.filter(contractid__exact=contractId, dateid__lte=dateId).order_by('-dateid')[:9:-1]
+            serializer = InvoiceFCReport2Serializer(instance=invoices, many=True)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -759,7 +808,7 @@ class FinancialInvoiceAPI(viewsets.ModelViewSet):
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'])
-    def contractMonthReportList(self, *args, **kwargs):
+    def contract_month_report_list(self, *args, **kwargs):
         """
         Get the work volume for the contract month report.
         """
@@ -769,6 +818,21 @@ class FinancialInvoiceAPI(viewsets.ModelViewSet):
             
             invoices = FinancialInvoice.objects.filter(contractid__exact=contractId, dateid__lte=dateId).order_by('-dateid')[:9:-1]
             serializer = FinancialInvoiceReportSerializer(instance=invoices, many=True)
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['get'])
+    def contract_month_fc_report_list(self, *args, **kwargs):
+        """
+        Get the work volume for the contract month report.
+        """
+        try:
+            contractId = int(kwargs["contractid"])
+            dateId = int(kwargs["dateid"])
+            
+            invoices = FinancialInvoice.objects.filter(contractid__exact=contractId, dateid__lte=dateId).order_by('-dateid')[:9:-1]
+            serializer = FinancialInvoiceFCReportSerializer(instance=invoices, many=True)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -983,7 +1047,6 @@ class BudgetCostAPI(viewsets.ModelViewSet):
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": "error", "data": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     @action(detail=True, methods=['get'])
     def contractMonthReportList(self, *args, **kwargs):

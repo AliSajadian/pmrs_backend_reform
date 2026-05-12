@@ -13,7 +13,6 @@ from django.core.exceptions import ValidationError
 from knox.models import AuthToken
 from .models import *
 
-
 # from django.contrib.auth import get_user_model
 # PmrsUser = get_user_model(), 'img_preview'
 

@@ -8,7 +8,7 @@ This module contains the serializers for the accounts application.
 """
 import logging
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 
 from django.contrib.auth.models import Group, Permission
 
@@ -170,51 +170,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data['email'], validated_data['password'])
 
         return user
+    
 
 class LoginSerializer(serializers.Serializer):
-    """
-    Serializer for the Login model.
-    """
     username = serializers.CharField()
     password = serializers.CharField()
 
-    def validate(self, attrs):
-        """
-        Validate the login attrs.
-        """
-        logger = logging.getLogger(__name__)
-
-        # Get the request from the context
-        # request = self.context.get('request')
-        username = attrs.get('username')
-        password = attrs.get('password')
-
-        # First, check if user exists
-        user_1 = get_user_model()
-        try:
-            user = user_1.objects.get(username=username)
-            print(f"User found: {user.username}, is_active: {user.is_active}")
-            logger.info(lambda: f"User found: %{username}, is_active: {user.is_active}")
-
-            # Debug: Check password
-            password_valid = user.check_password(password)
-            logger.info(lambda: f"Password check result: {password_valid}")
-
-            if password_valid and user.is_active:
-                print("Password matches!")
-                return user
-
-            if not password_valid:
-                raise serializers.ValidationError("Incorrect password")
-
-            print("Password does not match!")
-            raise serializers.ValidationError("User account is disabled")
-
-        except User.DoesNotExist as e:
-            print("User does not exist!")
-            logger.error(lambda: f"User not found: {username}")
-            raise serializers.ValidationError("User not found") from e
-
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Have Incorrect Credentials")
+    
     def create(self, validated_data):
         # Since this is only for validation, return None or the user
         return validated_data.get('user')

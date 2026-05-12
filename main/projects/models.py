@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from django.conf import settings
 from contracts.models import Contract, EpcCorporation
-from contracts.services import GregorianToShamsi, GregorianToShamsiShow
+from contracts.services import gregorian_to_shamsi, gregorian_to_shamsi_show
 
 
 class ReportDate(models.Model):
@@ -27,7 +27,7 @@ class ReportDate(models.Model):
         Get the shamsi date for the report date.
         """
         return '%s-%s' % (self.year, self.month)
-    # GregorianToShamsi(self.date)
+    # gregorian_to_shamsi(self.date)
     
     class Meta:
         db_table = 'tblw_ReportDate'
@@ -75,19 +75,19 @@ class ReportConfirm(models.Model):
         """
         Get the shamsi date for the user confirm date.
         """
-        return GregorianToShamsiShow(self.userconfirmdate) if self.userconfirmdate is not None else ''
+        return gregorian_to_shamsi_show(self.userconfirmdate) if self.userconfirmdate is not None else ''
  
     def pmconfirmshamsidate(self):
         """
         Get the shamsi date for the pm confirm date.
         """
-        return GregorianToShamsiShow(self.pmconfirmdate) if self.pmconfirmdate is not None else ''
+        return gregorian_to_shamsi_show(self.pmconfirmdate) if self.pmconfirmdate is not None else ''
 
     def saconfirmshamsidate(self):
         """
         Get the shamsi date for the sa confirm date.
         """
-        return GregorianToShamsiShow(self.saconfirmdate) if self.saconfirmdate is not None else ''
+        return gregorian_to_shamsi_show(self.saconfirmdate) if self.saconfirmdate is not None else ''
     
     class Meta:
         db_table = 'tblw_ReportConfirm'
@@ -293,7 +293,7 @@ class FinancialInfo(models.Model):
         Get the confirm date for the financial info.
         """
         rc = ReportConfirm.objects.filter(contractid__exact=self.contractid, dateid__exact=self.dateid, type__exact=1)[0]
-        return GregorianToShamsi(rc.userconfirmdate) or '' if rc is not None else ''
+        return gregorian_to_shamsi(rc.userconfirmdate) or '' if rc is not None else ''
 
     class Meta:
         db_table = 'tblw_FinancialInfo'
@@ -352,7 +352,7 @@ class Hse(models.Model):
         Get the confirm date for the HSE.
         """
         rc = ReportConfirm.objects.filter(contractid__exact=self.contractid, dateid__exact=self.dateid, type__exact=2)[0]
-        return GregorianToShamsi(rc.userconfirmdate) or '' if rc is not None else ''
+        return gregorian_to_shamsi(rc.userconfirmdate) or '' if rc is not None else ''
     
     class Meta:
         db_table = 'tblw_HSE'
@@ -454,7 +454,7 @@ class Invoice(models.Model):
         """
         Get the send date for the invoice.
         """
-        return GregorianToShamsi(self.senddate) if self.senddate is not None else ''
+        return gregorian_to_shamsi(self.senddate) if self.senddate is not None else ''
 
     def confirmedInvoiceAmounts(self):
         """
@@ -462,17 +462,36 @@ class Invoice(models.Model):
         """
         return (self.aci_g_r or 0) + (self.aca_g_r or 0) + (self.ew_g_r or 0)
  
+    def confirmedInvoiceFCAmounts(self):
+        """
+        Get the confirmed invoice amounts for the invoice.
+        """
+        return (self.aci_g_fc or 0) + (self.aca_g_fc or 0) + (self.ew_g_fc or 0)
+ 
     def sentInvoiceAmounts(self):
         """
         Get the sent invoice amounts for the invoice.
         """
         return (self.icc_g_r or 0) + (self.acc_g_r or 0) + (self.ewcc_g_r or 0)
 
+    def sentInvoiceFCAmounts(self):
+        """
+        Get the sent invoice amounts for the invoice.
+        """
+        return (self.icc_g_fc or 0) + (self.acc_g_fc or 0) + (self.ewcc_g_fc or 0)
+
     def allReceived(self):
         """
         Get the all received for the invoice.
         """
         a = ((self.ccpi_a_vat_ew_r or 0) - (self.cvat_r or 0))
+        return a
+    
+    def allFCReceived(self):
+        """
+        Get the all received for the invoice.
+        """
+        a = ((self.ccpi_a_vat_ew_fc or 0) - (self.cvat_fc or 0))
         return a
 
     def confirmedAmount(self):
@@ -481,6 +500,13 @@ class Invoice(models.Model):
         """
         b = ((self.aci_n_r or 0) + (self.aca_n_r or 0) + (self.ew_n_r or 0)) 
         return b 
+    
+    def confirmedFCAmount(self):
+        """
+        Get the confirmed fc amount for the invoice.
+        """
+        b = ((self.aci_n_fc or 0) + (self.aca_n_fc or 0) + (self.ew_n_fc or 0)) 
+        return b 
 
     def receivePercent(self):
         """
@@ -488,6 +514,14 @@ class Invoice(models.Model):
         """
         a = ((self.ccpi_a_vat_ew_r or 0) - (self.cvat_r or 0))
         b = ((self.aci_n_r or 0) + (self.aca_n_r or 0) + (self.ew_n_r or 0)) 
+        return 0 if b == 0 else (a / b) * 100
+
+    def receiveFCPercent(self):
+        """
+        Get the receive percent for the invoice.
+        """
+        a = ((self.ccpi_a_vat_ew_fc or 0) - (self.cvat_fc or 0))
+        b = ((self.aci_n_fc or 0) + (self.aca_n_fc or 0) + (self.ew_n_fc or 0)) 
         return 0 if b == 0 else (a / b) * 100
 
     def totalCumulativeReceiveAmount(self):
@@ -499,7 +533,17 @@ class Invoice(models.Model):
         lastclaimbill = financialInfo.lastclaimbill_r if financialInfo else 0
         
         return (self.ccpi_a_vat_ew_r or 0) + (lastclaimbill or 0)
+
+    def totalCumulativeReceiveFCAmount(self):
+        """
+        Get the total cumulative receive fc amount for the invoice.
+        """
+        financialInfos = FinancialInfo.objects.filter(contractid__exact=self.contractid, dateid__exact=self.dateid)
+        financialInfo = financialInfos[0] if financialInfos and len(financialInfos) > 0 else None
+        lastclaimbill = financialInfo.lastclaimbill_fc if financialInfo else 0
         
+        return (self.ccpi_a_vat_ew_fc or 0) + (lastclaimbill or 0)
+
     def persianMonth(self):
         """
         Get the persian month for the invoice.
@@ -634,7 +678,7 @@ class FinancialInvoice(models.Model):
         """
         Get the send shamsi date for the financial invoice.
         """
-        return GregorianToShamsi(self.senddate) if self.senddate is not None else ''
+        return gregorian_to_shamsi(self.senddate) if self.senddate is not None else ''
 
     def confirmedInvoiceAmounts(self):
         """
@@ -660,6 +704,13 @@ class FinancialInvoice(models.Model):
         Get the confirmed amount for the financial invoice.
         """
         b = ((self.aci_n_r or 0) + (self.aca_n_r or 0) + (self.ew_n_r or 0)) 
+        return b 
+    
+    def confirmedFCAmount(self):
+        """
+        Get the confirmed amount for the financial invoice.
+        """
+        b = ((self.aci_n_fc or 0) + (self.aca_n_fc or 0) + (self.ew_n_fc or 0)) 
         return b 
 
     def receivePercent(self):
@@ -717,7 +768,7 @@ class FinancialInvoice(models.Model):
                     return 'اسفند'
             
 
-        return GregorianToShamsi(self.senddate) if self.senddate is not None else ''
+        return gregorian_to_shamsi(self.senddate) if self.senddate is not None else ''
     
     class Meta:
         db_table = 'tblw_InvoiceEx'
@@ -947,7 +998,7 @@ class ProgressState(models.Model):
         if ece_date__max is None:
             return ''
         else:
-            return GregorianToShamsi(ece_date__max)
+            return gregorian_to_shamsi(ece_date__max)
         
     class Meta:
         db_table = 'tblw_ProgressState'
@@ -1144,49 +1195,49 @@ class TimeprogressState(models.Model):
         """
         Get the eep_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.eep_date) if self.eep_date is not None else ''           
+        return gregorian_to_shamsi(self.eep_date) if self.eep_date is not None else ''           
 
     def eee_shamsiDate(self):
         """
         Get the eee_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.eee_date) if self.eee_date is not None else ''           
+        return gregorian_to_shamsi(self.eee_date) if self.eee_date is not None else ''           
 
     def epp_shamsiDate(self):
         """
         Get the epp_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.epp_date) if self.epp_date is not None else ''           
+        return gregorian_to_shamsi(self.epp_date) if self.epp_date is not None else ''           
 
     def epe_shamsiDate(self):
         """
         Get the epe_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.epe_date) if self.epe_date is not None else ''           
+        return gregorian_to_shamsi(self.epe_date) if self.epe_date is not None else ''           
 
     def ecp_shamsiDate(self):
         """
         Get the ecp_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.ecp_date) if self.ecp_date is not None else ''           
+        return gregorian_to_shamsi(self.ecp_date) if self.ecp_date is not None else ''           
 
     def ece_shamsiDate(self):
         """
         Get the ece_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.ece_date) if self.ece_date is not None else ''           
+        return gregorian_to_shamsi(self.ece_date) if self.ece_date is not None else ''           
 
     def epjp_shamsiDate(self):
         """
         Get the epjp_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.epjp_date) if self.epjp_date is not None else ''           
+        return gregorian_to_shamsi(self.epjp_date) if self.epjp_date is not None else ''           
 
     def epje_shamsiDate(self):
         """
         Get the epje_shamsiDate for the time progress state.
         """
-        return GregorianToShamsi(self.epje_date) if self.epje_date is not None else ''           
+        return gregorian_to_shamsi(self.epje_date) if self.epje_date is not None else ''           
 
     class Meta:
         db_table = 'tblw_TimeProgressState'

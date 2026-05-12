@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, action, permission_classes
 
-from contracts.models import ContractType, Contract, UserRole, Country, Currency, Personeltype, \
+from contracts.models import ContractType, Contract, Country, Currency, Personeltype, \
     Personel, Addendum, EpcCorporation, ContractConsultant
 from projects.models import ReportConfirm
 from .serializers import ContractTypeSerializer, ContractSerializer, ContractSerializerEx, \
@@ -56,18 +56,19 @@ class ContractAPIEx(APIView):
         """
         Get the contracts for a user.
         """
+        from accounts.models import UserRole
+
         all_contracts = UserRole.objects.filter(
             userid__exact=userid,
             projectid__exact=None
         )
         if len(all_contracts) == 1:
             contracts = Contract.objects.all().order_by('-startdate')
-            serializer = ContractSerializerEx(contracts, many=True)
         else:
             contracts = Contract.objects.filter(Contract_UserRole__userid__exact=userid).order_by(
                 '-startdate').distinct()
-            serializer = ContractSerializerEx(contracts, many=True)
 
+        serializer = ContractSerializerEx(contracts, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
 
@@ -204,48 +205,43 @@ def put_finish_date(request, contract_id, date):
     return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
-class ContractInfo(APIView):
+@api_view(['Patch'])
+@permission_classes([permissions.IsAuthenticated])
+def put_contract_base_info(request, pk):
     """
-    API for the ContractInfo model.
+    Update the contract base info for a contract.
     """
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]
+    contract = Contract.objects.get(pk=pk)
+    serializer = ContractBaseInfoSerializer(instance=contract, data=request.data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    serializer = ContractBaseInfoSerializer(instance=contract, many=False)
+    return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
-    @api_view(['Patch'])
-    def put_contract_base_info(self, request, *args, **kwargs):
-        """
-        Update the contract base info for a contract.
-        """
-        pk = kwargs["id"]
-        contract = Contract.objects.get(pk=pk)
-        serializer = ContractBaseInfoSerializer(instance=contract, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        serializer = ContractBaseInfoSerializer(instance=contract, many=False)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
-    @api_view(['GET'])
-    def get_contract_consultant(self, request, *args, **kwargs):
-        """
-        Get the contract consultant for a contract.
-        """
-        pk = kwargs["id"]
-        contract_onsultants = ContractConsultant.objects.filter(contractid__exact=pk)
-        serializer = ContractConsultantSerializer((contract_onsultants \
-            if len(contract_onsultants) > 0 else None) \
-                if contract_onsultants is not None else None, many=True)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_contract_consultant(request, contract_id):
+    """
+    Get the contract consultant for a contract.
+    """
+    contract_onsultants = ContractConsultant.objects.filter(contractid__exact=contract_id)
+    serializer = ContractConsultantSerializer((contract_onsultants \
+        if len(contract_onsultants) > 0 else None) \
+            if contract_onsultants is not None else None, many=True)
+    return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
-    @api_view(['GET'])
-    def get_epc_corporation(self, request, *args, **kwargs):
-        """
-        Get the epc corporation for a contract.
-        """
-        pk = kwargs["id"]
-        contract_corporations = EpcCorporation.objects.filter(contractid__exact=pk).first()
-        serializer = EpcCorporationSerializer(contract_corporations)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_epc_corporation(request, contract_id):
+    """
+    Get the epc corporation for a contract.
+    """
+    contract_corporations = EpcCorporation.objects.filter(contractid__exact=contract_id).first()
+    serializer = EpcCorporationSerializer(contract_corporations)
+    return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+
 
 # pylint: disable=too-many-ancestors
 class ContractAddendumAPI(viewsets.ModelViewSet):
@@ -259,13 +255,11 @@ class ContractAddendumAPI(viewsets.ModelViewSet):
         permissions.IsAuthenticated
     ]
 
-    @action(detail=True, methods=['get'])
-    def contract_addendum_list(self, request, *args, **kwargs):
+    @action(detail=True, methods=['get'], url_path='contract-addendum-list/(?P<contract_id>[^/.]+)')
+    def contract_addendum_list(self, request, contract_id=None):
         """
         Get the contract addendum list for a contract.
         """
-        contract_id = int(kwargs["contract_id"])
-
         contract_addendums = Addendum.objects.filter(contractid__exact=contract_id)
         serializer = ContractAddendumSerializer(contract_addendums, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

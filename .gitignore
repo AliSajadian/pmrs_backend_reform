@@ -1,2 +1,13 @@
 .vscode
 .env
+.qodo
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+
+*.log
+venv/
+static/
+assets/

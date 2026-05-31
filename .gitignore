@@ -1,13 +1,48 @@
 .vscode
 .env
 .qodo
+
+# Python
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.pyw
 *.pyz
+.Python
+*.egg-info/
+dist/
+build/
 
-*.log
+# Virtual environments
 venv/
+.venv/
+env/
 static/
 assets/
+
+# Environment files
+.env
+*.env.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker
+*.log
+
+# Data & models
+*.bin
+*.gguf
+
+# OS
+.DS_Store
+Thumbs.db
